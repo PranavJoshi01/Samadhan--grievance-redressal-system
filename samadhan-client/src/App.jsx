@@ -5,6 +5,7 @@ import './App.css'
 import Register from './pages/Register/Register';
 import { ToastContainer } from 'react-toastify';
 import {Route,Routes} from 'react-router-dom';
+import Login from './pages/Login/Login'
 
 function App() {
   
@@ -16,6 +17,10 @@ function App() {
           <Route
           path='register'
           element={<Register />}
+        />
+         <Route
+          path='/'
+          element={<Login />}
         />
         </Routes>
         
