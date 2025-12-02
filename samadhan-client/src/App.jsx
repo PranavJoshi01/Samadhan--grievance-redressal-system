@@ -6,6 +6,7 @@ import Register from './pages/Register/Register';
 import { ToastContainer } from 'react-toastify';
 import {Route,Routes} from 'react-router-dom';
 import Login from './pages/Login/Login'
+import { Home } from './pages/Home/Home';
 
 function App() {
   
@@ -21,6 +22,10 @@ function App() {
          <Route
           path='/'
           element={<Login />}
+        />
+        <Route
+          path='/user/home'
+          element={<Home />}
         />
         </Routes>
         
