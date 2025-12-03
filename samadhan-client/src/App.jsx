@@ -3,8 +3,10 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Register from './pages/Register/Register';
+
 import { ToastContainer } from 'react-toastify';
 import {Route,Routes} from 'react-router-dom';
+import SubmitGrievance from './pages/SubmitGrievance/SubmitGrievance';
 
 function App() {
   
@@ -17,7 +19,9 @@ function App() {
           path='register'
           element={<Register />}
         />
+       
         </Routes>
+
         
         <ToastContainer />
       </div>
