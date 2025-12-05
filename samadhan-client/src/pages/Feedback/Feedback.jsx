@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-/*
-  NOTE: This uses a simple API base for local testing.
-  If your backend runs elsewhere, change API_BASE to the backend URL.
-  If your team already has an api helper file, replace fetch calls with that helper.
-*/
+
 const API_BASE = 'http://localhost:4000';
 
 export default function Feedback() {
@@ -23,8 +19,7 @@ export default function Feedback() {
       setFeedbacks(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Load feedbacks error', err);
-      // Friendly message for users
-      // If your backend is on a different port remove the API_BASE or update it.
+      
     }
   }
 
