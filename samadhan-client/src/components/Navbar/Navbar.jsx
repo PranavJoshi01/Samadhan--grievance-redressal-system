@@ -64,7 +64,12 @@ function Navbar() {
           {/* Logout */}
           <li>
             <button className="bg-red-500 px-4 py-1 rounded-md hover:bg-red-600 transition">
+              <Link
+              to="/"
+              className="hover:text-gray-200 transition"
+            >
               Logout
+            </Link>
             </button>
           </li>
 
