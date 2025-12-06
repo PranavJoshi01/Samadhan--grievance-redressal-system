@@ -11,6 +11,10 @@ import Login from './pages/Login/Login';
 import GrievanceDetails from './pages/GrievanceDetails/GrievanceDetails';
 import ManageAuthority from './pages/Admin/ManageAuthority/ManageAuthority';
 
+import { Home } from './pages/Home/Home';
+import Feedback from './pages/Feedback/Feedback';
+import Notifications from './pages/Notifications/Notifications';
+
 
 function App() {
   
@@ -33,6 +37,14 @@ function App() {
         <Route path='/manageAuth'
         element={<ManageAuthority/>}/>
 
+       
+        <Route
+          path='/user/home'
+          element={<Home />}
+        />
+        
+        <Route path  = '/feedback' element={<Feedback />} />
+        <Route path = '/notifications' element={<Notifications />} />
         </Routes>
 
        
