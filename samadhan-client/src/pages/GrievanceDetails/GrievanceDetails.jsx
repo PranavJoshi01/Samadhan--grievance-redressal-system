@@ -24,7 +24,9 @@ const GrievanceDetails = () => {
     <div className="max-w-3xl mx-auto mt-10 bg-white shadow-xl rounded-xl p-8">
       <h2 className="text-2xl font-bold text-blue-600 mb-6">
         Grievance Details
+        
       </h2>
+
 
       {/* TITLE */}
       <div className="mb-4">

@@ -7,6 +7,10 @@ import Register from './pages/Register/Register';
 import { ToastContainer } from 'react-toastify';
 import {Route,Routes} from 'react-router-dom';
 import SubmitGrievance from './pages/SubmitGrievance/SubmitGrievance';
+import Login from './pages/Login/Login';
+import GrievanceDetails from './pages/GrievanceDetails/GrievanceDetails';
+import ManageAuthority from './pages/Admin/ManageAuthority/ManageAuthority';
+
 
 function App() {
   
@@ -16,12 +20,23 @@ function App() {
       <div>
         <Routes>
           <Route
-          path='register'
+          path='/register'
           element={<Register />}
         />
-       
+         <Route
+          path='/login'
+          element={<Login />}
+        />
+       <Route path='/grievanceDetails' 
+       element={<GrievanceDetails/>}/>
+
+        <Route path='/manageAuth'
+        element={<ManageAuthority/>}/>
+
         </Routes>
 
+       
+      
         
         <ToastContainer />
       </div>
