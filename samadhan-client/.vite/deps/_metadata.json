@@ -1,8 +1,40 @@
 {
-  "hash": "c36d0c35",
-  "configHash": "226c1cbf",
-  "lockfileHash": "135aed02",
-  "browserHash": "e2a5f435",
-  "optimized": {},
-  "chunks": {}
+  "hash": "0bebb520",
+  "configHash": "bd8e9f47",
+  "lockfileHash": "7b43ec43",
+  "browserHash": "fe75f560",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "b2f3bc72",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "d1a9a3ba",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "7a4bff6a",
+      "needsInterop": false
+    },
+    "react-toastify": {
+      "src": "../../node_modules/react-toastify/dist/index.mjs",
+      "file": "react-toastify.js",
+      "fileHash": "36d7c8ab",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-BYNWFHQF": {
+      "file": "chunk-BYNWFHQF.js"
+    },
+    "chunk-3PPUDOJL": {
+      "file": "chunk-3PPUDOJL.js"
+    }
+  }
 }

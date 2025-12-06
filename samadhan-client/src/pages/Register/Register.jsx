@@ -44,7 +44,7 @@ const Register = () => {
     */
     // TEMP SUCCESS
     toast.success("Form validated (connect API next)");
-    navigate("/login");
+    navigate("/");
   };
 
   return (
