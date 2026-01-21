@@ -1,10 +1,33 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
+import NavbarUser from "../../components/Navbar/NavbarUser";
 import "./Home.css";
 import { Outlet, useLocation } from "react-router-dom";
 
 export const Home = () => {
   const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const loggedIn = localStorage.getItem("isLoggedIn");
+    setIsLoggedIn(loggedIn === "true");
+
+    const handleStorageChange = () => {
+      const loggedIn = localStorage.getItem("isLoggedIn");
+      setIsLoggedIn(loggedIn === "true");
+    };
+
+    const handleLogout = () => {
+      setIsLoggedIn(false);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("logout", handleLogout);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("logout", handleLogout);
+    };
+  }, []);
 
   
   const slides = ["/slide1.png", "/slide2.png", "/slide3.png"];
@@ -18,11 +41,11 @@ export const Home = () => {
   }, [slides.length]);
 
  
-  const isHomePage = location.pathname === "/user/home";
+  const isHomePage = location.pathname === "/user/home" || location.pathname === "/";
 
   return (
     <>
-      <Navbar />
+      {isLoggedIn ? <NavbarUser /> : <Navbar />}
 
       {/* Show slider + about section ONLY on Home page */}
       {isHomePage && (
