@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
+import { FaHome } from "react-icons/fa";
 
 function Navbar() {
   return (
-    <nav className="bg-blue-700 text-white shadow-md">
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+    <nav className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg w-full">
+      <div className="w-full px-6 py-4 flex items-center justify-between">
 
         {/* App Logo / Name */}
         <Link
-          to="/dashboard"
+          to="/user/home"
           className="text-xl font-bold hover:text-gray-200"
         >
           Samadhan
@@ -18,7 +19,16 @@ function Navbar() {
 
           <li>
             <Link
-              to="/dashboard"
+              to="/user/home"
+              className="hover:text-gray-200 transition"
+            >
+              <FaHome />
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              to="/user/home/dashboard"
               className="hover:text-gray-200 transition"
             >
               Dashboard
@@ -27,7 +37,7 @@ function Navbar() {
 
           <li>
             <Link
-              to="/raise-grievance"
+              to="/user/home/raise-grievance"
               className="hover:text-gray-200 transition"
             >
               Raise Grievance
@@ -36,7 +46,7 @@ function Navbar() {
 
           <li>
             <Link
-              to="/my-grievances"
+              to="/user/home/my-grievances"
               className="hover:text-gray-200 transition"
             >
               My Grievances
@@ -45,7 +55,7 @@ function Navbar() {
 
           <li>
             <Link
-              to="/notifications"
+              to="/user/home/notifications"
               className="hover:text-gray-200 transition"
             >
               Notifications
@@ -54,7 +64,7 @@ function Navbar() {
 
           <li>
             <Link
-              to="/feedback"
+              to="/user/home/feedback"
               className="hover:text-gray-200 transition"
             >
               Feedback
@@ -63,14 +73,12 @@ function Navbar() {
 
           {/* Logout */}
           <li>
-            <button className="bg-red-500 px-4 py-1 rounded-md hover:bg-red-600 transition">
-              <Link
-              to="/"
-              className="hover:text-gray-200 transition"
+            <Link
+              to="/login"
+              className="bg-red-500 px-4 py-1 rounded-md hover:bg-red-600 transition"
             >
               Logout
             </Link>
-            </button>
           </li>
 
         </ul>

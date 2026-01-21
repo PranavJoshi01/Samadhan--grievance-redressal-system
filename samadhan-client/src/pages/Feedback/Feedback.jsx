@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-
+import './Feedback.css';
 
 const API_BASE = 'http://localhost:4000';
 
@@ -48,24 +48,24 @@ export default function Feedback() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: 16 }}>
-      <h2 style={{ marginBottom: 12 }}>Submit Feedback</h2>
+    <div className="feedback-container">
+      <h2 className="feedback-title">Submit Feedback</h2>
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: 20 }}>
-        <div style={{ marginBottom: 8 }}>
+      <form onSubmit={handleSubmit} className="feedback-form">
+        <div className="form-group">
           <input
+            className="form-input"
             placeholder="Title"
             value={form.title}
             onChange={e => setForm({ ...form, title: e.target.value })}
-            style={{ width: '100%', padding: 8 }}
           />
         </div>
 
-        <div style={{ marginBottom: 8 }}>
+        <div className="form-group">
           <select
+            className="form-select"
             value={form.type}
             onChange={e => setForm({ ...form, type: e.target.value })}
-            style={{ padding: 8 }}
           >
             <option value="general">General</option>
             <option value="service">Service</option>
@@ -74,28 +74,28 @@ export default function Feedback() {
           </select>
         </div>
 
-        <div style={{ marginBottom: 8 }}>
+        <div className="form-group">
           <textarea
+            className="form-textarea"
             placeholder="Description"
             value={form.description}
             onChange={e => setForm({ ...form, description: e.target.value })}
             rows={5}
-            style={{ width: '100%', padding: 8 }}
           />
         </div>
 
-        <button type="submit" disabled={loading}>
+        <button className="submit-button" type="submit" disabled={loading}>
           {loading ? 'Submitting...' : 'Submit Feedback'}
         </button>
       </form>
 
-      <h3>Recent feedback</h3>
-      {feedbacks.length === 0 && <div>No feedback yet.</div>}
+      <h3 className="recent-feedback-title">Recent feedback</h3>
+      {feedbacks.length === 0 && <div className="no-feedback">No feedback yet.</div>}
       {feedbacks.map(f => (
-        <div key={f.id} style={{ border: '1px solid #ddd', padding: 10, marginBottom: 8 }}>
-          <div style={{ fontWeight: 600 }}>{f.title}</div>
-          <div style={{ fontSize: 12, color: '#555' }}>{f.type} • {new Date(f.createdAt).toLocaleString()}</div>
-          <div style={{ marginTop: 6 }}>{f.description}</div>
+        <div key={f.id} className="feedback-item">
+          <div className="feedback-title-item">{f.title}</div>
+          <div className="feedback-meta">{f.type} • {new Date(f.createdAt).toLocaleString()}</div>
+          <div className="feedback-description">{f.description}</div>
         </div>
       ))}
     </div>

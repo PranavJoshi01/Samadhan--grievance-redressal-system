@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { issuesMap } from "../Admindashboard/components/AdminData";
 import ManageIssueModal from "./ManageIssueModel";
+import AdminNavbar from "../../../components/Admin/AdminNavbar";
 
 export default function ManageIssues() {
   const [selected, setSelected] = useState(null);
   const issues = [...issuesMap.values()];
 
   return (
-    <div className="p-10">
+    <div className="min-h-screen bg-gray-100">
+      <AdminNavbar />
+      <div className="p-10">
 
       {/* BACK + TITLE */}
       <div className="flex items-center gap-4 mb-6">
@@ -90,6 +93,7 @@ export default function ManageIssues() {
           close={() => setSelected(null)}
         />
       )}
+      </div>
     </div>
   );
 }

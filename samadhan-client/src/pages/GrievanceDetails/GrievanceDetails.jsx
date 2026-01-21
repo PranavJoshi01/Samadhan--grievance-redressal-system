@@ -1,77 +1,92 @@
 import React from 'react'
-import { useParams } from "react-router-dom";
-
+import { Link } from "react-router-dom";
 
 const GrievanceDetails = () => {
-  const { id } = useParams(); // get id from URL
-
   // load all grievances
   const allGrievances = JSON.parse(localStorage.getItem("grievances")) || [];
 
-  // find the grievance that matches the ID
-  const grievance = allGrievances.find((g) => g.id == id);
-
-  // if invalid ID
-  if (!grievance) {
-    return (
-      <div className="text-center mt-10 text-red-600 text-xl">
-        Grievance Not Found
-      </div>
-    );
-  }
+  // For demo, assume current user is "John Doe" - in real app, get from auth
+  const currentUser = "John Doe";
+  const userGrievances = allGrievances.filter((g) => g.userName === currentUser);
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 bg-white shadow-xl rounded-xl p-8">
-      <h2 className="text-2xl font-bold text-blue-600 mb-6">
-        Grievance Details
-        
+    <div className="max-w-6xl mx-auto mt-10 bg-gray-50 p-8">
+      <h2 className="text-3xl font-bold text-blue-600 mb-8 text-center">
+        My Grievances
       </h2>
 
+      {userGrievances.length === 0 ? (
+        <div className="text-center text-gray-500 text-xl">
+          No grievances found. <Link to="/user/home/raise-grievance" className="text-blue-600 underline">Raise your first grievance</Link>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {userGrievances.map((grievance) => (
+            <div key={grievance.id} className="bg-white shadow-lg rounded-xl p-6 hover:shadow-xl transition-shadow">
+              {/* Title */}
+              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+                {grievance.title}
+              </h3>
 
-      {/* TITLE */}
-      <div className="mb-4">
-        <label className="font-semibold">Title</label>
-        <p className="border p-3 rounded-lg mt-1">{grievance.title}</p>
-      </div>
+              {/* Status Badge */}
+              <div className="mb-3">
+                <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                  grievance.status === 'Resolved' ? 'bg-green-100 text-green-800' :
+                  grievance.status === 'In Progress' ? 'bg-blue-100 text-blue-800' :
+                  grievance.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  {grievance.status}
+                </span>
+              </div>
 
-      {/* DESCRIPTION */}
-      <div className="mb-4">
-        <label className="font-semibold">Description</label>
-        <p className="border p-3 rounded-lg mt-1">{grievance.description}</p>
-      </div>
+              {/* Description */}
+              <p className="text-gray-600 mb-4 line-clamp-3">
+                {grievance.description}
+              </p>
 
-      {/* DEPARTMENT */}
-      <div className="mb-4">
-        <label className="font-semibold">Department</label>
-        <p className="border p-3 rounded-lg mt-1">{grievance.dept}</p>
-      </div>
+              {/* Department */}
+              <div className="mb-3">
+                <span className="font-medium text-gray-700">Department:</span>
+                <span className="ml-2 text-gray-600">{grievance.dept}</span>
+              </div>
 
-      {/* STATUS */}
-      <div className="mb-4">
-        <label className="font-semibold">Status</label>
-        <p className="border p-3 rounded-lg mt-1">{grievance.status}</p>
-      </div>
+              {/* Location */}
+              <div className="mb-3">
+                <span className="font-medium text-gray-700">Location:</span>
+                <p className="text-gray-600 text-sm mt-1">
+                  {grievance.address || "No address provided"}
+                </p>
+                {(grievance.latitude || grievance.longitude) && (
+                  <p className="text-xs text-gray-500">
+                    Lat: {grievance.latitude || "N/A"} · Long: {grievance.longitude || "N/A"}
+                  </p>
+                )}
+              </div>
 
-      {/* LOCATION */}
-      <div className="mb-4">
-        <label className="font-semibold">Location</label>
-        <p className="border p-3 rounded-lg mt-1">
-          {grievance.address || "No address provided"}
-        </p>
-        <p className="text-sm text-gray-600 mt-1">
-          Lat: {grievance.latitude || "N/A"} · Long: {grievance.longitude || "N/A"}
-        </p>
-      </div>
+              {/* User Name */}
+              <div className="mb-4">
+                <span className="font-medium text-gray-700">Raised by:</span>
+                <span className="ml-2 text-gray-600">{grievance.userName}</span>
+              </div>
 
-      {/* IMAGE */}
-      {grievance.media && (
-        <div className="mb-4">
-          <label className="font-semibold">Image</label>
-          <img
-            src={grievance.media}
-            alt="Issue"
-            className="rounded-xl mt-2"
-          />
+              {/* Image */}
+              {grievance.media && (
+                <div className="mb-4">
+                  <img
+                    src={grievance.media}
+                    alt="Issue"
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                </div>
+              )}
+
+              {/* Date */}
+              <div className="text-sm text-gray-500">
+                Submitted on: {new Date(grievance.date).toLocaleDateString()}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

@@ -1,25 +1,19 @@
-import React from "react";
-import "./Admindashbord.css";
-import { useNavigate } from "react-router-dom";
-import AdminNavbar from "../../../components/Admin/AdminNavbar";
+import React from 'react'
+import './Dashboard.css'
 
-export default function Admindashboard() {
-  const navigate = useNavigate();
-
+const Dashboard = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
-      <AdminNavbar />
-
+    <div className="dashboard-wrapper">
       {/* Page Title */}
       <div className="page-title-section">
-        <h2 className="admin-title">Admin Dashboard</h2>
-        <p className="admin-subtitle">Manage all reported issues and authorities</p>
+        <h2 className="dashboard-title">User Dashboard</h2>
+        <p className="dashboard-subtitle">Manage your reported grievances and track their progress</p>
       </div>
 
       {/* Stats Cards */}
       <div className="stats-container">
         <div className="stat-card">
-          <p>Total Issues</p>
+          <p>Total Grievances</p>
           <h3>5</h3>
         </div>
 
@@ -39,16 +33,16 @@ export default function Admindashboard() {
         </div>
       </div>
 
-      {/* Table & Map View Buttons */}
+      {/* View Toggle */}
       <div className="view-toggle">
         <button className="view-active">🔳 Table View</button>
         <button className="view-button">🗺 Map View</button>
       </div>
 
-      {/* All Issues Section */}
-      <div className="issues-section">
-        <h3 className="issues-title">All Issues</h3>
-        <p className="issues-subtitle">Complete list of reported issues</p>
+      {/* My Grievances Section */}
+      <div className="grievances-section">
+        <h3 className="grievances-title">My Grievances</h3>
+        <p className="grievances-subtitle">Complete list of grievances you've reported</p>
 
         {/* Table */}
         <div className="table-wrapper">
@@ -58,8 +52,6 @@ export default function Admindashboard() {
                 <th>Issue</th>
                 <th>Category</th>
                 <th>Status</th>
-                <th>Reporter</th>
-                <th>Authority</th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>
@@ -69,39 +61,55 @@ export default function Admindashboard() {
               <tr>
                 <td>
                   <strong>Pothole on Main Street</strong>
-                  <p className="desc">Large pothole causing traffic hazard…</p>
+                  <p className="desc">Large pothole causing traffic hazard near the intersection...</p>
                 </td>
                 <td><span className="chip-gray">Road Maintenance</span></td>
                 <td><span className="chip-blue">In Progress</span></td>
-                <td>John Doe</td>
-                <td>Road Department</td>
-                <td>Oct 1</td>
+                <td>Oct 1, 2023</td>
                 <td>📄</td>
               </tr>
 
               <tr>
                 <td>
                   <strong>Broken Street Light</strong>
-                  <p className="desc">Street light not working…</p>
+                  <p className="desc">Street light not working for the past week...</p>
                 </td>
                 <td><span className="chip-gray">Utilities</span></td>
                 <td><span className="chip-orange">Pending</span></td>
-                <td>Jane Smith</td>
-                <td><i className="unassigned">Unassigned</i></td>
-                <td>Oct 3</td>
+                <td>Oct 3, 2023</td>
                 <td>📄</td>
               </tr>
 
               <tr>
                 <td>
                   <strong>Illegal Dumping</strong>
-                  <p className="desc">Construction waste dumped…</p>
+                  <p className="desc">Construction waste dumped illegally in the park...</p>
                 </td>
                 <td><span className="chip-gray">Sanitation</span></td>
                 <td><span className="chip-green">Resolved</span></td>
-                <td>John Doe</td>
-                <td>Sanitation Department</td>
-                <td>Sep 28</td>
+                <td>Sep 28, 2023</td>
+                <td>📄</td>
+              </tr>
+
+              <tr>
+                <td>
+                  <strong>Water Leakage</strong>
+                  <p className="desc">Pipe burst causing water leakage on the sidewalk...</p>
+                </td>
+                <td><span className="chip-gray">Water Supply</span></td>
+                <td><span className="chip-blue">In Progress</span></td>
+                <td>Sep 25, 2023</td>
+                <td>📄</td>
+              </tr>
+
+              <tr>
+                <td>
+                  <strong>Traffic Signal Malfunction</strong>
+                  <p className="desc">Traffic signal at the junction is not functioning properly...</p>
+                </td>
+                <td><span className="chip-gray">Traffic Management</span></td>
+                <td><span className="chip-orange">Pending</span></td>
+                <td>Sep 20, 2023</td>
                 <td>📄</td>
               </tr>
 
@@ -110,7 +118,7 @@ export default function Admindashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-
+export default Dashboard
