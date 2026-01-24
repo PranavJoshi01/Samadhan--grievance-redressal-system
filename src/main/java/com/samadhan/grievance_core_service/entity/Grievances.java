@@ -1,6 +1,7 @@
 package com.samadhan.grievance_core_service.entity;
 
 
+import com.samadhan.grievance_core_service.constants.GrievanceStatus;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,8 +34,11 @@ public class Grievances {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private String status;
+    private GrievanceStatus status;
+
+
 
     @Column(name = "created_by_user_id", nullable = false)
     private Long createdByUserId;
@@ -53,13 +57,20 @@ public class Grievances {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Auto timestamps
+    /**
+     * Called automatically before a new entity is persisted (INSERT).
+     * Used to set audit fields like createdAt and updatedAt.
+     */
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * Called automatically before an existing entity is updated (UPDATE).
+     * Ensures updatedAt always reflects last modification time.
+     */
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
