@@ -1,4 +1,5 @@
 package com.samadhan.grievance_core_service.service;
+import com.samadhan.grievance_core_service.dto.GrievanceStatsDto;
 import com.samadhan.grievance_core_service.entity.Grievances;
 import org.springframework.data.domain.Page;
 
@@ -11,4 +12,6 @@ public interface GrievanceService {
             int page,
             int size
     );
+
+    GrievanceStatsDto getGrievanceCountByStatus(Long UserId);
 }
