@@ -4,6 +4,8 @@ package com.samadhan.grievance_core_service.controller;
 import com.samadhan.grievance_core_service.dto.GrievanceDto;
 import com.samadhan.grievance_core_service.service.GrievanceService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 public class GrievanceController {
 
+    private static final Logger logger =
+            LoggerFactory.getLogger(GrievanceController.class);
+
     @Autowired
     private GrievanceService grievanceService;
 
@@ -22,7 +27,7 @@ public class GrievanceController {
     //JWT
 @PostMapping
     public ResponseEntity<?> createGrievance(@Valid @RequestBody  GrievanceDto grievanceDto){
-    System.out.println("in grievance create controller");
+    logger.info("in grievance create controller");
       grievanceService.createGrievance(grievanceDto,123L);
     return ResponseEntity.ok().build();
 }
