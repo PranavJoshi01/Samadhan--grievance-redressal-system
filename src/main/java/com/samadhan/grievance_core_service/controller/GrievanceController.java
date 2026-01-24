@@ -2,11 +2,14 @@ package com.samadhan.grievance_core_service.controller;
 
 
 import com.samadhan.grievance_core_service.dto.GrievanceDto;
+import com.samadhan.grievance_core_service.entity.Grievances;
 import com.samadhan.grievance_core_service.service.GrievanceService;
 import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +34,19 @@ public class GrievanceController {
       grievanceService.createGrievance(grievanceDto,123L);
     return ResponseEntity.ok().build();
 }
+
+
+@GetMapping
+public ResponseEntity<Page<Grievances>> getAllGrievances(
+@RequestParam int page,
+@RequestParam int size
+) {
+return ResponseEntity.ok(
+grievanceService.getAllGrievances(page, size)
+);
+}
+
+
 
 
 }

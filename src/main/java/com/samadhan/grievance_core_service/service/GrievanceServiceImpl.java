@@ -1,5 +1,9 @@
 package com.samadhan.grievance_core_service.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 
 import com.samadhan.grievance_core_service.constants.GrievanceStatus;
 import com.samadhan.grievance_core_service.controller.GrievanceController;
@@ -74,4 +78,15 @@ public class GrievanceServiceImpl implements GrievanceService {
       logger.info("Saved media for grievance{}",savedGrievance.getGrievanceId());
         }
     }
+    
+    
+        @Override
+        public Page<Grievances> getAllGrievances(int page, int size) {
+
+
+        Pageable pageable = PageRequest.of(page, size);
+        return grievanceRepository.findAll(pageable);
+        }
+        
+    
 }
