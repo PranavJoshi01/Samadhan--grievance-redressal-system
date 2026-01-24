@@ -1,5 +1,6 @@
 package com.samadhan.grievance_core_service.service;
 
+import com.samadhan.grievance_core_service.dto.GrievanceStatsDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class GrievanceServiceImpl implements GrievanceService {
@@ -49,7 +55,7 @@ public class GrievanceServiceImpl implements GrievanceService {
                     return new ResourceNotFoundException("Department not found");
                 });
 
-        logger.info("Fetched department detail{}",category);
+        logger.info("Fetched department detail{}", category);
 
         // Create grievance entity
         Grievances grievance = Grievances.builder()
@@ -58,12 +64,13 @@ public class GrievanceServiceImpl implements GrievanceService {
                 .status(GrievanceStatus.PENDING)
                 .createdByUserId(userId)
                 .category(category)
+
                 .build();
 
         // Save grievance first
         Grievances savedGrievance = grievanceRepository.save(grievance);
 
-        logger.info("Saved grievance detail{}",savedGrievance.getGrievanceId());
+        logger.info("Saved grievance detail{}", savedGrievance.getGrievanceId());
         // Save single media if present
         if (grievanceDto.getMedia() != null) {
 
@@ -75,18 +82,39 @@ public class GrievanceServiceImpl implements GrievanceService {
 
             mediaRepository.save(media);
 
-      logger.info("Saved media for grievance{}",savedGrievance.getGrievanceId());
+            logger.info("Saved media for grievance{}", savedGrievance.getGrievanceId());
         }
     }
-    
-    
-        @Override
-        public Page<Grievances> getAllGrievances(int page, int size) {
+
+
+    @Override
+    public Page<Grievances> getAllGrievances(int page, int size) {
 
 
         Pageable pageable = PageRequest.of(page, size);
         return grievanceRepository.findAll(pageable);
+    }
+
+    @Override
+    public GrievanceStatsDto getGrievanceCountByStatus(Long userId) {
+
+        GrievanceStatsDto dto = new GrievanceStatsDto();
+        Map<GrievanceStatus, Long> map = new HashMap<>();
+        List<Object[]> result;
+
+
+        result = grievanceRepository.countByStatusForUser(userId);
+        long totalCount=grievanceRepository.countByCreatedByUserId(userId);
+        dto.setTotalCount(totalCount);
+
+        for (Object[] row : result) {
+            GrievanceStatus status = (GrievanceStatus) row[0];
+            Long count = (Long) row[1];
+            map.put(status, count);
         }
-        
-    
+
+        dto.setStatusWiseCount(map);
+        return dto;
+
+    }
 }
