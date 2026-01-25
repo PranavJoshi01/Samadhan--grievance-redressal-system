@@ -13,5 +13,5 @@ public interface GrievanceService {
             int size
     );
 
-    GrievanceStatsDto getGrievanceCountByStatus(Long UserId);
+    GrievanceStatsDto getGrievanceCountByStatus(Long UserId,String role,Long deptId);
 }
