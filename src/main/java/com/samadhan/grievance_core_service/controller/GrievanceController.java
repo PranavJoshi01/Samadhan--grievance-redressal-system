@@ -29,7 +29,7 @@ public class GrievanceController {
     @Autowired
     private GrievanceService grievanceService;
 
-    // Global Exception hnalder
+    // Global Exception hanlder
     // centralised Logger
     //JWT
     // To create a new grevience
