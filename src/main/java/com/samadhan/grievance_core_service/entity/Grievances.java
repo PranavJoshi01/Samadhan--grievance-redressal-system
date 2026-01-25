@@ -38,6 +38,8 @@ public class Grievances {
     @Column(nullable = false, length = 50)
     private GrievanceStatus status;
 
+    @Column(name = "address", length = 255)
+    private String address;
 
 
     @Column(name = "created_by_user_id", nullable = false)

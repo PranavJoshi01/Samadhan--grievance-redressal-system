@@ -1,6 +1,8 @@
 package com.samadhan.grievance_core_service.service;
 
 import com.samadhan.grievance_core_service.dto.GrievanceStatsDto;
+import com.samadhan.grievance_core_service.dto.GrievanceStatusChangedRequestDto;
+import com.samadhan.grievance_core_service.exception.ResourceAccessNotAllowed;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -31,7 +34,7 @@ import java.util.Map;
 public class GrievanceServiceImpl implements GrievanceService {
 
     private static final Logger logger =
-            LoggerFactory.getLogger(GrievanceController.class);
+            LoggerFactory.getLogger(GrievanceServiceImpl.class);
 
     @Autowired
     private GrievanceRepository grievanceRepository;
@@ -61,10 +64,10 @@ public class GrievanceServiceImpl implements GrievanceService {
         Grievances grievance = Grievances.builder()
                 .title(grievanceDto.getTitle())
                 .description(grievanceDto.getDescription())
+                .address(grievanceDto.getAddress())
                 .status(GrievanceStatus.PENDING)
                 .createdByUserId(userId)
                 .category(category)
-
                 .build();
 
         // Save grievance first
@@ -129,4 +132,74 @@ public class GrievanceServiceImpl implements GrievanceService {
         return dto;
 
     }
+
+    @Override
+    public void updateGrievance(GrievanceDto grievanceDto, Long id) {
+        Grievances grievance = grievanceRepository
+
+                .findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Grievance not found for id {}",id);
+
+                    return new ResourceNotFoundException("Grievance not found");
+                });
+
+        GrievanceCategory category = categoryRepository
+                .findById((long) grievanceDto.getDeptId())
+                .orElseThrow(() -> {
+                    logger.error(
+                            "Department {} not found for grievance title: {}",
+                            grievanceDto.getDeptId(),
+                            grievanceDto.getTitle()
+                    );
+                    return new ResourceNotFoundException("Department not found");
+                });
+
+        grievance.setTitle(grievanceDto.getTitle());
+        grievance.setDescription(grievanceDto.getDescription());
+        grievance.setAddress(grievanceDto.getAddress());
+        grievance.setCategory(category);
+
+        // Save grievance first
+        Grievances savedGrievance = grievanceRepository.save(grievance);
+
+        logger.info("Saved grievance detail{}", savedGrievance.getGrievanceId());
+        // Save single media if present
+        if (grievanceDto.getMedia() != null) {
+
+            GrievanceMedia media = GrievanceMedia.builder()
+                    .mediaUrl(grievanceDto.getMedia().getMediaUrl())
+                    .mediaType(grievanceDto.getMedia().getMediaType())
+                    .grievance(savedGrievance)
+                    .build();
+
+            mediaRepository.save(media);
+
+            logger.info("Saved media for grievance{}", savedGrievance.getGrievanceId());
+        }
+    }
+
+    @Override
+    public void settingStatus(GrievanceStatusChangedRequestDto grievanceStatusChangedRequestDto, long id, String role) {
+
+        Grievances grievance = grievanceRepository
+
+                .findById(grievanceStatusChangedRequestDto.getGrievanceId())
+                .orElseThrow(() -> {
+                    logger.error("Grievance not found for id {}",id);
+
+                    return new ResourceNotFoundException("Grievance not found");
+                });
+
+        GrievanceStatus newStatus = grievanceStatusChangedRequestDto.getStatus();
+        if(role.equals("USER") && newStatus !=GrievanceStatus.CLOSED){
+            throw new ResourceAccessNotAllowed(
+                    "User is allowed to close grievance only"
+            );
+
+        }
+        grievance.setStatus(newStatus);
+        grievanceRepository.save(grievance);
+    }
+
 }
