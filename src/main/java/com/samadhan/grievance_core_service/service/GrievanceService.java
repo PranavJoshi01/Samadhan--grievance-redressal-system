@@ -3,6 +3,7 @@ import com.samadhan.grievance_core_service.dto.GrievanceStatsDto;
 import com.samadhan.grievance_core_service.entity.Grievances;
 import org.springframework.data.domain.Page;
 
+import com.samadhan.grievance_core_service.constants.GrievanceStatus;
 import com.samadhan.grievance_core_service.dto.GrievanceDto;
 
 public interface GrievanceService {
@@ -14,4 +15,12 @@ public interface GrievanceService {
     );
 
     GrievanceStatsDto getGrievanceCountByStatus(Long UserId,String role,Long deptId);
+    
+    
+    void assignAuthorityAndUpdateStatus(
+    		Long grievanceId,
+    		Long authorityId,
+    		GrievanceStatus status,
+    		String message
+    		);
 }
