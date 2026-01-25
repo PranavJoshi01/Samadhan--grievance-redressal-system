@@ -4,5 +4,6 @@ public enum GrievanceStatus {
 
     PENDING,
     IN_PROGRESS,
-    RESOLVED
+    RESOLVED,
+    CLOSED
 }

@@ -43,4 +43,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
+
+    @ExceptionHandler(ResourceAccessNotAllowed.class)
+    public ResponseEntity<String> handleResourceAccessNotAllowed(ResourceAccessNotAllowed ex){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
 }

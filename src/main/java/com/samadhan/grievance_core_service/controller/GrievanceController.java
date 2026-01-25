@@ -5,6 +5,7 @@ import com.samadhan.grievance_core_service.constants.GrievanceStatus;
 import com.samadhan.grievance_core_service.dto.AssignGrievanceRequestDto;
 import com.samadhan.grievance_core_service.dto.GrievanceDto;
 import com.samadhan.grievance_core_service.dto.GrievanceStatsDto;
+import com.samadhan.grievance_core_service.dto.GrievanceStatusChangedRequestDto;
 import com.samadhan.grievance_core_service.entity.Grievances;
 import com.samadhan.grievance_core_service.service.GrievanceService;
 import jakarta.validation.Valid;
@@ -58,7 +59,17 @@ grievanceService.getAllGrievances(page, size)
 );
 }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateGrievance(@Valid @RequestBody  GrievanceDto grievanceDto,@PathVariable Long id){
 
+        grievanceService.updateGrievance(grievanceDto,id);
+        return ResponseEntity.ok().build();
+    }
+    @PutMapping("/statusChange")
+    public ResponseEntity<?> settingStatus(@RequestBody GrievanceStatusChangedRequestDto grievanceStatusChangedRequestDto){
+        grievanceService.settingStatus(grievanceStatusChangedRequestDto,123L,"ADMIN");
+        return ResponseEntity.ok("Grievance status updated");
+    }
 
 @PutMapping("/{grievanceId}/assign")
 public ResponseEntity<?> assignAuthorityAndUpdateStatus(
