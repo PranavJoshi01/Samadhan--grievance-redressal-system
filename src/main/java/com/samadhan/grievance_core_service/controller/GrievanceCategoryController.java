@@ -7,7 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +31,32 @@ public class GrievanceCategoryController {
     @GetMapping
     public ResponseEntity<List<GrievanceCategory>> getAllCategory(){
         return ResponseEntity.ok(grievanceCategoryService.getAllCategory());
+    }
+    
+    
+    @PostMapping
+    public ResponseEntity<GrievanceCategory> createCategory(
+    @RequestBody GrievanceCategory category
+    ) {
+    return ResponseEntity.ok(grievanceCategoryService.createCategory(category));
+    }
+    
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<GrievanceCategory> updateCategory(
+    @PathVariable Long id,
+    @RequestBody GrievanceCategory category
+    ) {
+    return ResponseEntity.ok(
+    grievanceCategoryService.updateCategory(id, category)
+    );
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    grievanceCategoryService.deleteCategory(id);
+    return ResponseEntity.noContent().build();
     }
 
 

@@ -7,4 +7,12 @@ import java.util.List;
 
 public interface GrievanceCategoryService {
    List<GrievanceCategory> getAllCategory();
+   
+   GrievanceCategory createCategory(GrievanceCategory category);
+
+
+   GrievanceCategory updateCategory(Long categoryId, GrievanceCategory category);
+
+
+   void deleteCategory(Long categoryId);
 }

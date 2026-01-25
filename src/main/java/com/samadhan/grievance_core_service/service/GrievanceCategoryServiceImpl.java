@@ -18,4 +18,33 @@ public class GrievanceCategoryServiceImpl implements GrievanceCategoryService {
     public List<GrievanceCategory> getAllCategory() {
         return grievanceCategoryRepository.findAll();
     }
+    
+    
+    @Override
+    public GrievanceCategory createCategory(GrievanceCategory category) {
+    return grievanceCategoryRepository.save(category);
+    }
+    
+    @Override
+    public GrievanceCategory updateCategory(
+    Long categoryId,
+    GrievanceCategory category
+    ) {
+    GrievanceCategory existingCategory =
+    grievanceCategoryRepository.findById(categoryId)
+    .orElseThrow(() ->
+    new RuntimeException("Category not found"));
+
+
+    existingCategory.setCategoryName(category.getCategoryName());
+    existingCategory.setDescription(category.getDescription());
+
+
+    return grievanceCategoryRepository.save(existingCategory);
+    }
+    
+    @Override
+    public void deleteCategory(Long categoryId) {
+    grievanceCategoryRepository.deleteById(categoryId);
+    }
 }
