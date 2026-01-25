@@ -2,6 +2,7 @@ package com.samadhan.grievance_core_service.controller;
 
 
 import com.samadhan.grievance_core_service.constants.GrievanceStatus;
+import com.samadhan.grievance_core_service.dto.AssignGrievanceRequestDto;
 import com.samadhan.grievance_core_service.dto.GrievanceDto;
 import com.samadhan.grievance_core_service.dto.GrievanceStatsDto;
 import com.samadhan.grievance_core_service.dto.GrievanceStatusChangedRequestDto;
@@ -69,5 +70,23 @@ grievanceService.getAllGrievances(page, size)
         grievanceService.settingStatus(grievanceStatusChangedRequestDto,123L,"ADMIN");
         return ResponseEntity.ok("Grievance status updated");
     }
+
+@PutMapping("/{grievanceId}/assign")
+public ResponseEntity<?> assignAuthorityAndUpdateStatus(
+        @PathVariable Long grievanceId,
+        @RequestBody AssignGrievanceRequestDto request
+) {
+
+    grievanceService.assignAuthorityAndUpdateStatus(
+            grievanceId,
+            request.getAuthorityId(),
+            request.getStatus(),
+            request.getMessage()
+    );
+
+    return ResponseEntity.ok().build();
+}
+
+
 
 }

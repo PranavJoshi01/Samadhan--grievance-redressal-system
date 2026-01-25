@@ -6,6 +6,7 @@ import com.samadhan.grievance_core_service.entity.Grievances;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
+import com.samadhan.grievance_core_service.constants.GrievanceStatus;
 import com.samadhan.grievance_core_service.dto.GrievanceDto;
 
 public interface GrievanceService {
@@ -21,4 +22,12 @@ public interface GrievanceService {
     void updateGrievance(@Valid GrievanceDto grievanceDto, Long id);
 
     void settingStatus(GrievanceStatusChangedRequestDto grievanceStatusChangedRequestDto, long l, String user);
+    
+    
+    void assignAuthorityAndUpdateStatus(
+    		Long grievanceId,
+    		Long authorityId,
+    		GrievanceStatus status,
+    		String message
+    		);
 }

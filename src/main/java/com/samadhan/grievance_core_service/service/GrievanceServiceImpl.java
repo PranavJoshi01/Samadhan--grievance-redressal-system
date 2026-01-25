@@ -202,4 +202,39 @@ public class GrievanceServiceImpl implements GrievanceService {
         grievanceRepository.save(grievance);
     }
 
+    
+    
+    @Override
+    @Transactional
+    public void assignAuthorityAndUpdateStatus(
+    Long grievanceId,
+    Long authorityId,
+    GrievanceStatus status,
+    String message
+    ) {
+
+
+    Grievances grievance = grievanceRepository.findById(grievanceId)
+    .orElseThrow(() ->
+    new RuntimeException("Grievance not found"));
+
+
+    grievance.setAssignedAuthorityId(authorityId);
+    grievance.setStatus(status);
+
+
+    // optional: future use
+    if (message != null && !message.isBlank()) {
+    logger.info("Notification message: {}", message);
+    }
+
+
+    grievanceRepository.save(grievance);
+
+
+    logger.info(
+    "Grievance {} updated with status {} and authority {}",
+    grievanceId, status, authorityId
+    );
+    }
 }
