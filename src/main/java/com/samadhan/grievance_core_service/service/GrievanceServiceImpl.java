@@ -74,7 +74,6 @@ public class GrievanceServiceImpl implements GrievanceService {
         Grievances savedGrievance = grievanceRepository.save(grievance);
 
         logger.info("Saved grievance detail{}", savedGrievance.getGrievanceId());
-        // Save single media if present
         if (grievanceDto.getMedia() != null) {
 
             GrievanceMedia media = GrievanceMedia.builder()
@@ -92,8 +91,6 @@ public class GrievanceServiceImpl implements GrievanceService {
 
     @Override
     public Page<Grievances> getAllGrievances(int page, int size) {
-
-
         Pageable pageable = PageRequest.of(page, size);
         return grievanceRepository.findAll(pageable);
     }
