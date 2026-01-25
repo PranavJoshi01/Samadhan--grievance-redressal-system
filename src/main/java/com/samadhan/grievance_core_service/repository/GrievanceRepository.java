@@ -20,4 +20,21 @@ public interface GrievanceRepository extends JpaRepository<Grievances,Long> {
     List<Object[]> countByStatusForUser(@Param("userId") Long userId);
     Long countByCreatedByUserId(Long userId);
 
+    @Query("""
+    SELECT g.status, COUNT(g)
+    FROM Grievances g
+    GROUP BY g.status
+""")
+    List<Object[]> countByStatusForAdmin();
+
+
+    @Query("""
+    SELECT g.status, COUNT(g)
+    FROM Grievances g
+    WHERE g.assignedAuthorityId = :deptId
+    GROUP BY g.status
+""")
+    List<Object[]> countByStatusForAuthority(@Param("deptId") Long deptId);
+    Long countByAssignedAuthorityId(Long deptId);
+
 }

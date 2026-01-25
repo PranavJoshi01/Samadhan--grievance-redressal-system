@@ -96,15 +96,27 @@ public class GrievanceServiceImpl implements GrievanceService {
     }
 
     @Override
-    public GrievanceStatsDto getGrievanceCountByStatus(Long userId) {
+    public GrievanceStatsDto getGrievanceCountByStatus(Long userId,String role,Long deptId) {
 
         GrievanceStatsDto dto = new GrievanceStatsDto();
         Map<GrievanceStatus, Long> map = new HashMap<>();
         List<Object[]> result;
+        long totalCount;
 
+        if(role.equals("USER")) {
+              result = grievanceRepository.countByStatusForUser(userId);
+               totalCount = grievanceRepository.countByCreatedByUserId(userId);
+          }
+          else if(role.equals("ADMIN")){
+              result=grievanceRepository.countByStatusForAdmin();
+               totalCount=grievanceRepository.count();
+          }
+          else{
+              result=grievanceRepository.countByStatusForAuthority(deptId);
+               totalCount=grievanceRepository.countByAssignedAuthorityId(deptId);
 
-        result = grievanceRepository.countByStatusForUser(userId);
-        long totalCount=grievanceRepository.countByCreatedByUserId(userId);
+          }
+     logger.info("Fetched count seccessfully {}",totalCount);
         dto.setTotalCount(totalCount);
 
         for (Object[] row : result) {

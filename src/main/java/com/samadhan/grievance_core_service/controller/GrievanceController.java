@@ -39,7 +39,8 @@ public class GrievanceController {
 
 @GetMapping("/count")
     public ResponseEntity<?> getGrievanceCountByStatus(){
-    GrievanceStatsDto status =grievanceService.getGrievanceCountByStatus(123L);
+    logger.info("Entered in count API for user");
+    GrievanceStatsDto status =grievanceService.getGrievanceCountByStatus(124L,"ADMIN",1L);
     return ResponseEntity.ok().body(status);
 
 }
