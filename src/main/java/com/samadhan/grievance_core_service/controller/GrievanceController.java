@@ -14,13 +14,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/grievance")
-
-
+@CrossOrigin(origins = "*")
 public class GrievanceController {
 
     private static final Logger logger =
@@ -33,11 +36,16 @@ public class GrievanceController {
     // centralised Logger
     //JWT
     // To create a new grevience
-@PostMapping
-    public ResponseEntity<?> createGrievance(@Valid @RequestBody  GrievanceDto grievanceDto){
+@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createGrievance(@Valid @RequestPart("data") GrievanceDto grievanceDto,
+                                             @RequestPart(value = "media", required = false) MultipartFile[] media
+                                             ){
     logger.info("in grievance create controller");
       grievanceService.createGrievance(grievanceDto,123L);
-    return ResponseEntity.ok().build();
+    return  ResponseEntity.ok(
+             "Grievance created successfully"
+
+    );
 }
 
 @GetMapping("/count")
