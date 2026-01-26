@@ -57,14 +57,21 @@ public class GrievanceController {
 }*/
 
 
-@GetMapping
-public ResponseEntity<Page<Grievances>> getAllGrievances(
-@RequestParam int page,
-@RequestParam int size
+@GetMapping("/all")
+public ResponseEntity<Page<Grievances>> getAllGrievancesByRole(
+        @RequestParam int page,
+        @RequestParam int size,
+        @RequestParam Long userId,
+        @RequestParam String role,
+        @RequestParam(required = false) Long deptId
 ) {
-return ResponseEntity.ok(
-grievanceService.getAllGrievances(page, size)
-);
+
+    Page<Grievances> grievances =
+            grievanceService.getAllGrievancesByRole(
+                    page, size, userId, role, deptId
+            );
+
+    return ResponseEntity.ok(grievances);
 }
 
     @PutMapping("/{id}")

@@ -92,12 +92,39 @@ public class GrievanceServiceImpl implements GrievanceService {
 
     }
 
-
     @Override
-    public Page<Grievances> getAllGrievances(int page, int size) {
+    public Page<Grievances> getAllGrievancesByRole(
+            int page,
+            int size,
+            Long userId,
+            String role,
+            Long deptId
+    ) {
+
         Pageable pageable = PageRequest.of(page, size);
-        return grievanceRepository.findAll(pageable);
+
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            // ADMIN → all grievances
+            return grievanceRepository.findAll(pageable);
+        }
+
+        if ("USER".equalsIgnoreCase(role)) {
+            // USER → only grievances created by user
+            return grievanceRepository
+                    .findByCreatedByUserId(userId, pageable);
+        }
+
+        if ("AUTHORITY".equalsIgnoreCase(role)) {
+            // AUTHORITY → grievances assigned to authority / department
+            return grievanceRepository
+                    .findByAssignedAuthorityId(deptId, pageable);
+        }
+
+        throw new IllegalArgumentException("Invalid role: " + role);
     }
+    
+    
+    
 
     @Override
     public GrievanceStatsDto getGrievanceCountByStatus(Long userId,String role,Long deptId) {
