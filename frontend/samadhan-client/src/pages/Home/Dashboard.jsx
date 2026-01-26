@@ -1,7 +1,21 @@
 import React from 'react'
+import { useGrievances, useGrievanceStats } from '../../hooks/useGrievance'
 import './Dashboard.css'
 
 const Dashboard = () => {
+  // Fetch data from backend fetch 10 record from backend 
+  const { grievances, loading: grievanceLoading, currentPage, totalPages, totalElements, pageSize, goToPage } = useGrievances(0, 10)
+  // fetch total counts 
+  const { stats, loading: statsLoading } = useGrievanceStats()
+
+  const handleNextPage = () => {
+    goToPage(currentPage + 1)
+  }
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) goToPage(currentPage - 1)
+  }
+
   return (
     <div className="dashboard-wrapper">
       {/* Page Title */}
@@ -14,22 +28,22 @@ const Dashboard = () => {
       <div className="stats-container">
         <div className="stat-card">
           <p>Total Grievances</p>
-          <h3>5</h3>
+          <h3>{statsLoading ? '...' : stats?.totalCount || 0}</h3>
         </div>
 
         <div className="stat-card">
           <p>Pending</p>
-          <h3 className="pending">2</h3>
+          <h3 className="pending">{statsLoading ? '...' : stats?.statusWiseCount?.PENDING || 0}</h3>
         </div>
 
         <div className="stat-card">
           <p>In Progress</p>
-          <h3 className="progress">2</h3>
+          <h3 className="progress">{statsLoading ? '...' : stats?.statusWiseCount?.ASSIGNED || 0}</h3>
         </div>
 
         <div className="stat-card">
           <p>Resolved</p>
-          <h3 className="resolved">1</h3>
+          <h3 className="resolved">{statsLoading ? '...' : stats?.statusWiseCount?.RESOLVED || 0}</h3>
         </div>
       </div>
 
@@ -44,78 +58,61 @@ const Dashboard = () => {
         <h3 className="grievances-title">My Grievances</h3>
         <p className="grievances-subtitle">Complete list of grievances you've reported</p>
 
+        {grievanceLoading && <p>Loading grievances...</p>}
+
         {/* Table */}
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Issue</th>
-                <th>Category</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
+        {!grievanceLoading && grievances.length > 0 && (
+          <>
+            <div className="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {grievances.map((grievance) => (
+                    <tr key={grievance.grievanceId}>
+                      <td>
+                        <strong>{grievance.title}</strong>
+                        <p className="desc">{grievance.description?.substring(0, 50)}...</p>
+                      </td>
+                      <td><span className="chip-gray">{grievance.category?.categoryName}</span></td>
+                      <td>
+                        {grievance.status === 'PENDING' && <span className="chip-orange">Pending</span>}
+                        {grievance.status === 'ASSIGNED' && <span className="chip-blue">In Progress</span>}
+                        {grievance.status === 'RESOLVED' && <span className="chip-green">Resolved</span>}
+                      </td>
+                      <td>{new Date(grievance.createdAt).toLocaleDateString()}</td>
+                      <td>📄</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-            <tbody>
-              <tr>
-                <td>
-                  <strong>Pothole on Main Street</strong>
-                  <p className="desc">Large pothole causing traffic hazard near the intersection...</p>
-                </td>
-                <td><span className="chip-gray">Road Maintenance</span></td>
-                <td><span className="chip-blue">In Progress</span></td>
-                <td>Oct 1, 2023</td>
-                <td>📄</td>
-              </tr>
+            {/* Pagination */}
+            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Page {currentPage + 1} of {totalPages}</span>
+              <div>
+                <button onClick={handlePreviousPage} disabled={currentPage === 0} style={{ marginRight: '10px' }}>
+                  ← Previous
+                </button>
+                <button onClick={handleNextPage} disabled={currentPage >= totalPages - 1}>
+                  Next →
+                </button>
+              </div>
+            </div>
+          </>
+        )}
 
-              <tr>
-                <td>
-                  <strong>Broken Street Light</strong>
-                  <p className="desc">Street light not working for the past week...</p>
-                </td>
-                <td><span className="chip-gray">Utilities</span></td>
-                <td><span className="chip-orange">Pending</span></td>
-                <td>Oct 3, 2023</td>
-                <td>📄</td>
-              </tr>
-
-              <tr>
-                <td>
-                  <strong>Illegal Dumping</strong>
-                  <p className="desc">Construction waste dumped illegally in the park...</p>
-                </td>
-                <td><span className="chip-gray">Sanitation</span></td>
-                <td><span className="chip-green">Resolved</span></td>
-                <td>Sep 28, 2023</td>
-                <td>📄</td>
-              </tr>
-
-              <tr>
-                <td>
-                  <strong>Water Leakage</strong>
-                  <p className="desc">Pipe burst causing water leakage on the sidewalk...</p>
-                </td>
-                <td><span className="chip-gray">Water Supply</span></td>
-                <td><span className="chip-blue">In Progress</span></td>
-                <td>Sep 25, 2023</td>
-                <td>📄</td>
-              </tr>
-
-              <tr>
-                <td>
-                  <strong>Traffic Signal Malfunction</strong>
-                  <p className="desc">Traffic signal at the junction is not functioning properly...</p>
-                </td>
-                <td><span className="chip-gray">Traffic Management</span></td>
-                <td><span className="chip-orange">Pending</span></td>
-                <td>Sep 20, 2023</td>
-                <td>📄</td>
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
+        {!grievanceLoading && grievances.length === 0 && (
+          <p>No grievances found</p>
+        )}
       </div>
     </div>
   )
