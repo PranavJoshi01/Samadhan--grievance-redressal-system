@@ -48,13 +48,13 @@ public class GrievanceController {
     );
 }
 
-/*@GetMapping("/count")
+@GetMapping("/count")
     public ResponseEntity<?> getGrievanceCountByStatus(){
     logger.info("Entered in count API for user");
     GrievanceStatsDto status =grievanceService.getGrievanceCountByStatus(124L,"ADMIN",1L);
     return ResponseEntity.ok().body(status);
 
-}*/
+}
 
 
 @GetMapping
@@ -95,18 +95,18 @@ public ResponseEntity<?> assignAuthorityAndUpdateStatus(
     return ResponseEntity.ok().build();
 }
 
-@GetMapping("/count")
-public ResponseEntity<?> getGrievanceCountByStatus(
-        @RequestParam Long userId,
-        @RequestParam String role,
-        @RequestParam(required = false) Long deptId
-) {
-    GrievanceStatsDto status =
-        grievanceService.getGrievanceCountByStatus(
-            userId, role, deptId
-        );
-    return ResponseEntity.ok(status);
-}
+//@GetMapping("/count")
+//public ResponseEntity<?> getGrievanceCountByStatus(
+//        @RequestParam Long userId,
+//        @RequestParam String role,
+//        @RequestParam(required = false) Long deptId
+//) {
+//    GrievanceStatsDto status =
+//        grievanceService.getGrievanceCountByStatus(
+//            userId, role, deptId
+//        );
+//    return ResponseEntity.ok(status);
+//}
 
 
 
