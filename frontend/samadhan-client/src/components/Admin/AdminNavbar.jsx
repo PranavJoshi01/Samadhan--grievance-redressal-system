@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function AdminNavbar() {
+function AdminNavbar({ onAddDepartment }) {
   return (
     <nav className="bg-blue-700 text-white shadow-md">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
@@ -41,7 +41,15 @@ function AdminNavbar() {
             >
               Manage Issues
             </Link>
-          </li>
+            </li>
+            <li>
+              <button
+  onClick={onAddDepartment}
+  className="bg-white text-blue-600 px-3 py-1 rounded text-sm font-medium"
+>
+  + Add Department
+</button>
+            </li>
 
           {/* Logout */}
           <li>

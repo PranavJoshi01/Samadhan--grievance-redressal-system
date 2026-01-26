@@ -17,6 +17,7 @@ import { Home } from './pages/Home/Home';
 import Dashboard from './pages/Home/Dashboard';
 import Feedback from './pages/Feedback/Feedback';
 import Notifications from './pages/Notifications/Notifications';
+import AddDepartment from './pages/Admin/Admindashboard/AddDepartment';
 
 
 function App() {
@@ -57,6 +58,11 @@ function App() {
         <Route
           path='/admin/manage-issues'
           element={<ManageIssues />}
+        />
+
+        <Route
+          path='/admin/add-department'
+          element={<AddDepartment />}
         />
 
         <Route
