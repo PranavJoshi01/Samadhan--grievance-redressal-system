@@ -63,6 +63,15 @@ public class Grievances {
      * Called automatically before a new entity is persisted (INSERT).
      * Used to set audit fields like createdAt and updatedAt.
      */
+    
+    @OneToMany(
+    		mappedBy = "grievance",
+    		fetch = FetchType.LAZY,
+    		cascade = CascadeType.ALL
+    		)
+    		private java.util.List<GrievanceMedia> grievanceMedia;
+    
+    
     @PrePersist
     protected void onCreate() {
       createdAt = LocalDateTime.now();

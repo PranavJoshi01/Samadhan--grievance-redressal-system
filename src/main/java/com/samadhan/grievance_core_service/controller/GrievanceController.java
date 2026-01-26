@@ -59,12 +59,23 @@ public class GrievanceController {
 
 @GetMapping("/all")
 public ResponseEntity<Page<Grievances>> getAllGrievancesByRole(
-        @RequestParam int page,
-        @RequestParam int size,
-        @RequestParam Long userId,
-        @RequestParam String role,
-        @RequestParam(required = false) Long deptId
+		@RequestParam int page,
+		@RequestParam int size,
+		@RequestParam(required = false) Long userId,
+		@RequestParam String role,
+		@RequestParam(required = false) Long deptId
 ) {
+	
+	
+	// ✅ ROLE BASED VALIDATION
+	if ("USER".equalsIgnoreCase(role) && userId == null) {
+	throw new IllegalArgumentException("userId is required for USER role");
+	}
+
+
+	if ("AUTHORITY".equalsIgnoreCase(role) && deptId == null) {
+	throw new IllegalArgumentException("deptId is required for AUTHORITY role");
+	}
 
     Page<Grievances> grievances =
             grievanceService.getAllGrievancesByRole(
