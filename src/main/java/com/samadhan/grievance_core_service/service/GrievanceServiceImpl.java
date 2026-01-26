@@ -2,6 +2,7 @@ package com.samadhan.grievance_core_service.service;
 
 import com.samadhan.grievance_core_service.dto.GrievanceStatsDto;
 import com.samadhan.grievance_core_service.dto.GrievanceStatusChangedRequestDto;
+import com.samadhan.grievance_core_service.dto.GrievanceResponseDto;
 import com.samadhan.grievance_core_service.exception.ResourceAccessNotAllowed;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -122,6 +123,58 @@ public class GrievanceServiceImpl implements GrievanceService {
 
         throw new IllegalArgumentException("Invalid role: " + role);
     }
+
+    /**
+     * Fetch grievances with role-based filtering and convert to ResponseDTO
+     * This method returns only media URLs instead of full media objects
+     */
+    public Page<GrievanceResponseDto> getAllGrievancesByRoleWithDTO(
+            int page,
+            int size,
+            Long userId,
+            String role,
+            Long deptId
+    ) {
+        Page<Grievances> grievancesPage = getAllGrievancesByRole(page, size, userId, role, deptId);
+        return grievancesPage.map(this::convertToResponseDto);
+    }
+
+    /**
+     * Helper method to convert Grievances entity to ResponseDTO
+     */
+    private GrievanceResponseDto convertToResponseDto(Grievances grievance) {
+        GrievanceResponseDto dto = GrievanceResponseDto.builder()
+                .grievanceId(grievance.getGrievanceId())
+                .title(grievance.getTitle())
+                .description(grievance.getDescription())
+                .address(grievance.getAddress())
+                .status(grievance.getStatus())
+                .createdAt(grievance.getCreatedAt())
+                .updatedAt(grievance.getUpdatedAt())
+                .createdByUserId(grievance.getCreatedByUserId())
+                .assignedAuthorityId(grievance.getAssignedAuthorityId())
+                .build();
+
+        // Map category
+        if (grievance.getCategory() != null) {
+            GrievanceResponseDto.CategoryDto categoryDto = GrievanceResponseDto.CategoryDto.builder()
+                    .categoryId(grievance.getCategory().getCategoryId())
+                    .categoryName(grievance.getCategory().getCategoryName())
+                    .build();
+            dto.setCategory(categoryDto);
+        }
+
+        // Map media URLs only
+        if (grievance.getGrievanceMedia() != null && !grievance.getGrievanceMedia().isEmpty()) {
+            java.util.List<String> mediaUrls = grievance.getGrievanceMedia()
+                    .stream()
+                    .map(GrievanceMedia::getMediaUrl)
+                    .toList();
+            dto.setMediaUrls(mediaUrls);
+        }
+
+        return dto;
+    }
     
     
     
@@ -163,35 +216,45 @@ public class GrievanceServiceImpl implements GrievanceService {
 
     @Override
     public void updateGrievance(GrievanceDto grievanceDto, Long id) {
+        logger.info("Updating grievance with id: {}, title: {}", id, grievanceDto.getTitle());
+        
         Grievances grievance = grievanceRepository
-
                 .findById(id)
                 .orElseThrow(() -> {
-                    logger.error("Grievance not found for id {}",id);
-
-                    return new ResourceNotFoundException("Grievance not found");
+                    logger.error("Grievance not found for id: {}", id);
+                    return new ResourceNotFoundException("Grievance not found with id: " + id);
                 });
 
+        // Prevent editing closed grievances
+        if (grievance.getStatus() == GrievanceStatus.CLOSED) {
+            logger.warn("Attempt to update closed grievance with id: {}", id);
+            throw new ResourceAccessNotAllowed("Cannot update a closed grievance");
+        }
+
+        // Validate that category exists
         GrievanceCategory category = categoryRepository
                 .findById((long) grievanceDto.getDeptId())
                 .orElseThrow(() -> {
                     logger.error(
-                            "Department {} not found for grievance title: {}",
+                            "Category with id {} not found for grievance update. Grievance id: {}, title: {}",
                             grievanceDto.getDeptId(),
+                            id,
                             grievanceDto.getTitle()
                     );
-                    return new ResourceNotFoundException("Department not found");
+                    return new ResourceNotFoundException("Category not found with id: " + grievanceDto.getDeptId());
                 });
 
+        // Update grievance fields
         grievance.setTitle(grievanceDto.getTitle());
         grievance.setDescription(grievanceDto.getDescription());
         grievance.setAddress(grievanceDto.getAddress());
         grievance.setCategory(category);
 
-        // Save grievance first
+        // Save updated grievance
         Grievances savedGrievance = grievanceRepository.save(grievance);
 
-        logger.info("Saved grievance detail{}", savedGrievance.getGrievanceId());
+        logger.info("Grievance updated successfully. Id: {}, Title: {}", 
+                savedGrievance.getGrievanceId(), savedGrievance.getTitle());
         // Save single media if present
         if (grievanceDto.getMedia() != null) {
 

@@ -2,10 +2,7 @@ package com.samadhan.grievance_core_service.controller;
 
 
 import com.samadhan.grievance_core_service.constants.GrievanceStatus;
-import com.samadhan.grievance_core_service.dto.AssignGrievanceRequestDto;
-import com.samadhan.grievance_core_service.dto.GrievanceDto;
-import com.samadhan.grievance_core_service.dto.GrievanceStatsDto;
-import com.samadhan.grievance_core_service.dto.GrievanceStatusChangedRequestDto;
+import com.samadhan.grievance_core_service.dto.*;
 import com.samadhan.grievance_core_service.entity.Grievances;
 import com.samadhan.grievance_core_service.service.GrievanceService;
 import jakarta.validation.Valid;
@@ -57,28 +54,19 @@ public class GrievanceController {
 }
 
 
-@GetMapping("/all")
-public ResponseEntity<Page<Grievances>> getAllGrievancesByRole(
+@GetMapping
+public ResponseEntity<Page<GrievanceResponseDto>> getAllGrievancesByRole(
 		@RequestParam int page,
-		@RequestParam int size,
-		@RequestParam(required = false) Long userId,
-		@RequestParam String role,
-		@RequestParam(required = false) Long deptId
+		@RequestParam int size
 ) {
 	
+	// ✅ HARDCODED VALUES FOR NOW (matching /count API)
+	Long userId = 124L;           // Will be fetched from JWT token later
+	String role = "ADMIN";         // Will be fetched from JWT token later (matching /count)
+	Long deptId = 1L;              // Will be fetched from JWT token later
 	
-	// ✅ ROLE BASED VALIDATION
-	if ("USER".equalsIgnoreCase(role) && userId == null) {
-	throw new IllegalArgumentException("userId is required for USER role");
-	}
-
-
-	if ("AUTHORITY".equalsIgnoreCase(role) && deptId == null) {
-	throw new IllegalArgumentException("deptId is required for AUTHORITY role");
-	}
-
-    Page<Grievances> grievances =
-            grievanceService.getAllGrievancesByRole(
+    Page<GrievanceResponseDto> grievances =
+            grievanceService.getAllGrievancesByRoleWithDTO(
                     page, size, userId, role, deptId
             );
 
@@ -86,10 +74,11 @@ public ResponseEntity<Page<Grievances>> getAllGrievancesByRole(
 }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateGrievance(@Valid @RequestBody  GrievanceDto grievanceDto,@PathVariable Long id){
-
-        grievanceService.updateGrievance(grievanceDto,id);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> updateGrievance(@Valid @RequestBody GrievanceDto grievanceDto, @PathVariable Long id){
+        logger.info("Updating grievance with id: {}", id);
+        grievanceService.updateGrievance(grievanceDto, id);
+        logger.info("Grievance {} updated successfully", id);
+        return ResponseEntity.ok("Grievance updated successfully");
     }
     @PutMapping("/statusChange")
     public ResponseEntity<?> settingStatus(@RequestBody GrievanceStatusChangedRequestDto grievanceStatusChangedRequestDto){

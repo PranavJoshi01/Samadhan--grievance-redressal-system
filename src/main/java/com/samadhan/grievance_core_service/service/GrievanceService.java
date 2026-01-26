@@ -1,5 +1,6 @@
 package com.samadhan.grievance_core_service.service;
 import com.samadhan.grievance_core_service.constants.GrievanceStatus;
+import com.samadhan.grievance_core_service.dto.GrievanceResponseDto;
 import com.samadhan.grievance_core_service.dto.GrievanceStatsDto;
 import com.samadhan.grievance_core_service.dto.GrievanceStatusChangedRequestDto;
 import com.samadhan.grievance_core_service.entity.Grievances;
@@ -33,4 +34,6 @@ public interface GrievanceService {
     		GrievanceStatus status,
     		String message
     		);
+
+    Page<GrievanceResponseDto> getAllGrievancesByRoleWithDTO(int page, int size, Long userId, String role, Long deptId);
 }
