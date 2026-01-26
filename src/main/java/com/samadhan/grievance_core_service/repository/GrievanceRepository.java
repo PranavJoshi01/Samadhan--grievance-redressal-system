@@ -1,6 +1,10 @@
 package com.samadhan.grievance_core_service.repository;
 
 import com.samadhan.grievance_core_service.entity.Grievances;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +14,30 @@ import java.util.List;
 
 @Repository
 public interface GrievanceRepository extends JpaRepository<Grievances,Long> {
+	
+	
+	/*Page<Grievances> findByCreatedByUserId(
+			Long userId,
+			Pageable pageable
+			);
+
+
+			Page<Grievances> findByAssignedAuthorityId(
+			Long authorityId,
+			Pageable pageable
+			);*/
+			
+			
+			
+	@EntityGraph(attributePaths = {"grievanceMedia"})
+	Page<Grievances> findAll(Pageable pageable);
+
+	@EntityGraph(attributePaths = {"grievanceMedia"})
+	Page<Grievances> findByCreatedByUserId(Long userId, Pageable pageable);
+
+	@EntityGraph(attributePaths = {"grievanceMedia"})
+	Page<Grievances> findByAssignedAuthorityId(Long deptId, Pageable pageable);
+	
 
     @Query("""
     SELECT g.status, COUNT(g)

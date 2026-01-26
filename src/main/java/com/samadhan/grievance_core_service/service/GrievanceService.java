@@ -12,9 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 public interface GrievanceService {
     void createGrievance(GrievanceDto grievanceDto, MultipartFile[] media, Long userId);
     
-    Page<Grievances> getAllGrievances(
+    Page<Grievances> getAllGrievancesByRole(
             int page,
-            int size
+            int size,
+            Long userId,
+            String role,
+            Long deptId
     );
 
     GrievanceStatsDto getGrievanceCountByStatus(Long UserId,String role,Long deptId);
