@@ -11,6 +11,7 @@ import GrievanceDetails from './pages/GrievanceDetails/GrievanceDetails';
 import ManageAuthority from './pages/Admin/ManageAuthority/ManageAuthority';
 import Admindashboard from './pages/Admin/Admindashboard/Admindashboard';
 import ManageIssues from './pages/Admin/ManageIssue/ManageIssues';
+import AuthorityDashboard from './pages/Authority/AuthorityDashboard';
 
 import { Home } from './pages/Home/Home';
 import Dashboard from './pages/Home/Dashboard';
@@ -57,6 +58,11 @@ function App() {
           path='/admin/manage-issues'
           element={<ManageIssues />}
         />
+
+        <Route
+          path="/authority"
+         element={<AuthorityDashboard />}
+          />
 
         <Route
           path='/user/home'
