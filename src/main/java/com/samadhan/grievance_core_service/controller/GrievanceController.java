@@ -41,7 +41,7 @@ public class GrievanceController {
                                              @RequestPart(value = "media", required = false) MultipartFile[] media
                                              ){
     logger.info("in grievance create controller");
-      grievanceService.createGrievance(grievanceDto,123L);
+      grievanceService.createGrievance(grievanceDto,media,123L);
     return  ResponseEntity.ok(
              "Grievance created successfully"
 

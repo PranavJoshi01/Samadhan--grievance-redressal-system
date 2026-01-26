@@ -6,11 +6,11 @@ import com.samadhan.grievance_core_service.entity.Grievances;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 
-import com.samadhan.grievance_core_service.constants.GrievanceStatus;
 import com.samadhan.grievance_core_service.dto.GrievanceDto;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface GrievanceService {
-    void createGrievance(GrievanceDto grievanceDto,Long userId);
+    void createGrievance(GrievanceDto grievanceDto, MultipartFile[] media, Long userId);
     
     Page<Grievances> getAllGrievances(
             int page,
