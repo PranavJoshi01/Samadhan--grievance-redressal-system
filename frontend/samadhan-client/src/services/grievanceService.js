@@ -93,14 +93,19 @@ export const getAllGrievances = async (page = 0, size = 10) => {
 /**
  * Update an existing grievance
  * @param {number} id - Grievance ID
- * @param {Object} grievanceData - Updated grievance data
+ * @param {Object} grievanceData - Updated grievance data (title, description, address, deptId)
  * @returns {Promise<Object>} Updated grievance
  */
 export const updateGrievance = async (id, grievanceData) => {
   try {
     const response = await axiosInstance.put(
       API_ENDPOINTS.GRIEVANCE.UPDATE(id),
-      grievanceData
+      grievanceData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -124,7 +129,7 @@ export const deleteGrievance = async (id) => {
 };
 /**
  * Fetch grievances with pagination
- * @param {Object} filters - Filter options { page, size }
+ * @param {Object} filters - Filter options { page, size, status }
  * @returns {Promise<Object>} Paginated response
  */
 export const fetchGrievancesWithFilters = async (filters = {}) => {
@@ -133,6 +138,10 @@ export const fetchGrievancesWithFilters = async (filters = {}) => {
       page: filters.page || 0,
       size: filters.size || 10,
     };
+    // Add status filter if provided
+    if (filters.status) {
+      params.status = filters.status;
+    }
     const response = await axiosInstance.get(API_ENDPOINTS.GRIEVANCE.GET_ALL, { params });
     return response.data;
   } catch (error) {
@@ -151,6 +160,30 @@ export const fetchGrievanceStats = async () => {
     return response.data;
   } catch (error) {
     console.error('Error fetching stats:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update grievance status
+ * @param {number} grievanceId - Grievance ID
+ * @param {string} status - New status (PENDING, ASSIGNED, RESOLVED, CLOSED)
+ * @returns {Promise<Object>} Updated grievance
+ */
+export const updateGrievanceStatus = async (grievanceId, status) => {
+  try {
+    const response = await axiosInstance.put(
+      API_ENDPOINTS.GRIEVANCE.STATUS_CHANGE,
+      { grievanceId, status },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating grievance status:', error);
     throw error;
   }
 };

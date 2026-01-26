@@ -2,22 +2,29 @@ import React from 'react'
 import { useGrievances, useGrievanceStats } from '../../hooks/useGrievance'
 import './Dashboard.css'
 import { FaEye, FaEdit, FaTimesCircle } from 'react-icons/fa'
-import { useState } from 'react'
-
+import { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
+import { updateGrievanceStatus } from '../../services/grievanceService'
 import GrievanceModal from '../../modal/Grievance/GrievanceModal';
 
 
 
 
 const Dashboard = () => {
+  // Status filter state
+  const [selectedStatus, setSelectedStatus] = useState('')
+  
   // Fetch data from backend fetch 10 record from backend 
-  const { grievances, loading: grievanceLoading, currentPage, totalPages, totalElements, pageSize, goToPage } = useGrievances(0, 10)
+  const { grievances, loading: grievanceLoading, currentPage, totalPages, totalElements, pageSize, goToPage, refetch: refetchGrievances } = useGrievances(0, 10, selectedStatus)
   // fetch total counts 
-  const { stats, loading: statsLoading } = useGrievanceStats()
+  const { stats, loading: statsLoading, refetch: refetchStats } = useGrievanceStats()
 
   const [isModalOpen, setIsModalOpen] = useState(false)
-const [selectedGrievance, setSelectedGrievance] = useState(null)
-const [modalMode, setModalMode] = useState('view')
+  const [selectedGrievance, setSelectedGrievance] = useState(null)
+  const [modalMode, setModalMode] = useState('view')
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [grievanceToClose, setGrievanceToClose] = useState(null)
+  const [isClosing, setIsClosing] = useState(false)
 
 const handleView = (grievance) => {
   setSelectedGrievance(grievance) // data set
@@ -39,13 +46,44 @@ const handleEdit = (grievance) => {
     if (currentPage > 0) goToPage(currentPage - 1)
   }
 
+  // Reset to first page when status filter changes
+  useEffect(() => {
+    if (currentPage !== 0) {
+      goToPage(0)
+    }
+  }, [selectedStatus])
+
  
 
 
 
 const handleClose = (id) => {
-  console.log('Close grievance', id)
-  // later: call close API
+  setGrievanceToClose(id)
+  setShowConfirmation(true)
+}
+
+const handleConfirmClose = async () => {
+  try {
+    setIsClosing(true)
+    await updateGrievanceStatus(grievanceToClose, 'CLOSED')
+    toast.success('Grievance closed successfully')
+    setShowConfirmation(false)
+    setGrievanceToClose(null)
+    // Refetch the current page to show updated data
+    await refetchGrievances()
+    // Also refetch stats to update the counts
+    await refetchStats()
+  } catch (error) {
+    toast.error('Failed to close grievance. Please try again.')
+    console.error(error)
+  } finally {
+    setIsClosing(false)
+  }
+}
+
+const handleCancelClose = () => {
+  setShowConfirmation(false)
+  setGrievanceToClose(null)
 }
 
   return (
@@ -79,10 +117,26 @@ const handleClose = (id) => {
         </div>
       </div>
 
-      {/* View Toggle */}
-      <div className="view-toggle">
-        <button className="view-active">🔳 Table View</button>
-        <button className="view-button">🗺 Map View</button>
+      {/* Status Filter */}
+      <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <label style={{ fontWeight: '600' }}>Filter by Status:</label>
+        <select 
+          value={selectedStatus} 
+          onChange={(e) => setSelectedStatus(e.target.value)}
+          style={{ 
+            padding: '8px 12px', 
+            borderRadius: '6px', 
+            border: '1px solid #d1d5db',
+            fontSize: '14px',
+            cursor: 'pointer'
+          }}
+        >
+          <option value="">All</option>
+          <option value="PENDING">Pending</option>
+          <option value="ASSIGNED">In Progress</option>
+          <option value="RESOLVED">Resolved</option>
+          <option value="CLOSED">Closed</option>
+        </select>
       </div>
 
       {/* My Grievances Section */}
@@ -118,6 +172,7 @@ const handleClose = (id) => {
                         {grievance.status === 'PENDING' && <span className="chip-orange">Pending</span>}
                         {grievance.status === 'ASSIGNED' && <span className="chip-blue">In Progress</span>}
                         {grievance.status === 'RESOLVED' && <span className="chip-green">Resolved</span>}
+                        {grievance.status === 'CLOSED' && <span className="chip-gray">Closed</span>}
                       </td>
                       <td>{new Date(grievance.createdAt).toLocaleDateString()}</td>
                      <td className="action-icons">
@@ -128,18 +183,26 @@ const handleClose = (id) => {
     onClick={() => handleView(grievance)}
   />
 
-  {/* Edit */}
+  {/* Edit - Disabled for CLOSED status */}
   <FaEdit
-    className="icon edit-icon"
-    title="Edit Grievance"
-    onClick={() => handleEdit(grievance)}
+    className={`icon edit-icon ${grievance.status === 'CLOSED' ? 'disabled' : ''}`}
+    title={grievance.status === 'CLOSED' ? 'Closed grievances cannot be edited' : 'Edit Grievance'}
+    onClick={grievance.status === 'CLOSED' ? undefined : () => handleEdit(grievance)}
+    style={{
+      cursor: grievance.status === 'CLOSED' ? 'not-allowed' : 'pointer',
+      opacity: grievance.status === 'CLOSED' ? 0.4 : 1
+    }}
   />
 
-  {/* Close */}
+  {/* Close - Only enabled for PENDING status */}
   <FaTimesCircle
-    className="icon close-icon"
-    title="Close Grievance"
-    onClick={() => handleClose(grievance.grievanceId)}
+    className={`icon close-icon ${grievance.status !== 'PENDING' ? 'disabled' : ''}`}
+    title={grievance.status === 'PENDING' ? 'Close Grievance' : 'Only pending grievances can be closed'}
+    onClick={grievance.status === 'PENDING' ? () => handleClose(grievance.grievanceId) : undefined}
+    style={{
+      cursor: grievance.status === 'PENDING' ? 'pointer' : 'not-allowed',
+      opacity: grievance.status === 'PENDING' ? 1 : 0.4
+    }}
   />
 </td>
 
@@ -169,11 +232,47 @@ const handleClose = (id) => {
         )}
       </div>
       <GrievanceModal
-  isOpen={isModalOpen}
-  onClose={() => setIsModalOpen(false)}
-  grievance={selectedGrievance}
-  mode={modalMode}
-/>
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        grievance={selectedGrievance}
+        mode={modalMode}
+        onUpdateSuccess={async () => {
+          // Refresh grievances and stats after successful update
+          await refetchGrievances()
+          await refetchStats()
+        }}
+      />
+
+      {/* Confirmation Modal */}
+      {showConfirmation && (
+        <div className="confirmation-overlay">
+          <div className="confirmation-modal">
+            <div className="confirmation-header">
+              <h3>Close Grievance</h3>
+            </div>
+            <div className="confirmation-body">
+              <p>Are you sure you want to close this grievance?</p>
+              <p className="confirmation-subtitle">This action cannot be undone.</p>
+            </div>
+            <div className="confirmation-footer">
+              <button 
+                className="btn-secondary" 
+                onClick={handleCancelClose}
+                disabled={isClosing}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn-danger" 
+                onClick={handleConfirmClose}
+                disabled={isClosing}
+              >
+                {isClosing ? 'Closing...' : 'Yes, Close'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )

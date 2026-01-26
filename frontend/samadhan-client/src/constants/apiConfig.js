@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
     GET_COUNT: '/grievance/count',
     UPDATE: (id) => `/grievance/${id}`,
     DELETE: (id) => `/grievance/${id}`,
+    STATUS_CHANGE: '/grievance/statusChange',
   },
   CATEGORY: {
     GET_ALL: '/category',

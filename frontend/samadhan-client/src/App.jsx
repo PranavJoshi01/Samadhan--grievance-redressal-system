@@ -21,7 +21,8 @@ import Notifications from './pages/Notifications/Notifications';
 
 function App() {
   
-
+ const isAutheticated = true; // read token from cookie;
+ 
   return (
     <>
       <div>
