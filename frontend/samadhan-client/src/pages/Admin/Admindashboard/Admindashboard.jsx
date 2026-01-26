@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";   // ✅ ADD: useState ONLY
 import "./Admindashbord.css";
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../../components/Admin/AdminNavbar";
@@ -6,9 +6,12 @@ import AdminNavbar from "../../../components/Admin/AdminNavbar";
 export default function Admindashboard() {
   const navigate = useNavigate();
 
+  // ✅ ADD: modal state (sirf ye line add)
+  const [showAddDeptModal, setShowAddDeptModal] = useState(false);
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <AdminNavbar />
+      <AdminNavbar  onAddDepartment={() => setShowAddDeptModal(true)} />
 
       {/* Page Title */}
       <div className="page-title-section">
@@ -104,13 +107,58 @@ export default function Admindashboard() {
                 <td>Sep 28</td>
                 <td>📄</td>
               </tr>
-
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* ===================== ADD DEPARTMENT MODAL (ONLY ADDITION) ===================== */}
+      {showAddDeptModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+    <div className="bg-white w-[360px] rounded-lg shadow-xl p-6">
+      <h2 className="text-lg font-semibold mb-4">Add Department</h2>
+
+      <div className="mb-3">
+        <label className="text-sm font-medium">Department Name</label>
+        <input
+          type="text"
+          className="w-full mt-1 border rounded px-3 py-2"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="text-sm font-medium">Description</label>
+        <textarea
+          className="w-full mt-1 border rounded px-3 py-2"
+        />
+      </div>
+
+      <div className="flex justify-end gap-3">
+        {/* Cancel */}
+        <button
+          onClick={() => setShowAddDeptModal(false)}
+          className="px-4 py-1 border rounded text-sm"
+        >
+          Cancel
+        </button>
+
+        {/* Submit */}
+        <button
+          onClick={() => {
+            // 🔥 future me yahi backend call hoga
+            // axios.post("/department", data)
+
+            setShowAddDeptModal(false); // ✅ CLOSE MODAL
+          }}
+          className="px-4 py-1 bg-blue-600 text-white rounded text-sm"
+        >
+          Add Department
+        </button>
+      </div>
     </div>
-  );
+  </div>
+)}
+
+</div>
+);
 }
-
-
