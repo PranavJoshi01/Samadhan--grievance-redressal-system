@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 
 
 import com.samadhan.grievance_core_service.constants.GrievanceStatus;
-import com.samadhan.grievance_core_service.controller.GrievanceController;
 import com.samadhan.grievance_core_service.dto.GrievanceDto;
 import com.samadhan.grievance_core_service.entity.GrievanceCategory;
 import com.samadhan.grievance_core_service.entity.GrievanceMedia;
@@ -23,9 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,10 +41,13 @@ public class GrievanceServiceImpl implements GrievanceService {
     @Autowired
     private GrievanceCategoryRepository categoryRepository;
 
+    @Autowired
+    private S3Service s3Service;
+
 
     @Override
     @Transactional
-    public void createGrievance(GrievanceDto grievanceDto, Long userId) {
+    public void createGrievance(GrievanceDto grievanceDto, MultipartFile[] mediaFile, Long userId) {
         GrievanceCategory category = categoryRepository
                 .findById((long) grievanceDto.getDeptId())
                 .orElseThrow(() -> {
@@ -74,18 +75,21 @@ public class GrievanceServiceImpl implements GrievanceService {
         Grievances savedGrievance = grievanceRepository.save(grievance);
 
         logger.info("Saved grievance detail{}", savedGrievance.getGrievanceId());
-        if (grievanceDto.getMedia() != null) {
 
-            GrievanceMedia media = GrievanceMedia.builder()
-                    .mediaUrl(grievanceDto.getMedia().getMediaUrl())
-                    .mediaType(grievanceDto.getMedia().getMediaType())
-                    .grievance(savedGrievance)
-                    .build();
+            if (mediaFile != null && mediaFile.length > 0) {
 
-            mediaRepository.save(media);
+                String mediaUrl = s3Service.uploadFile(mediaFile[0]);
 
+                GrievanceMedia mediaEntity = GrievanceMedia.builder()
+                        .mediaUrl(mediaUrl)
+                        .mediaType(mediaFile[0].getContentType())
+                        .grievance(savedGrievance)
+                        .build();
+
+                mediaRepository.save(mediaEntity);
+            }
             logger.info("Saved media for grievance{}", savedGrievance.getGrievanceId());
-        }
+
     }
 
 
