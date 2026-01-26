@@ -147,3 +147,29 @@ tbody td {
   font-style: italic;
   color: #b3b3b3;
 }
+.action-icons {
+  display: flex;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.icon {
+  font-size: 18px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.icon:hover {
+  transform: scale(1.2);
+}
+
+.view-icon {
+  color: #2563eb; /* blue */
+}
+
+.edit-icon {
+  color: #f59e0b; /* orange */
+}
+
+.close-icon {
+  color: #dc2626; /* red */
+}

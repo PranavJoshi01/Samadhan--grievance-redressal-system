@@ -1,12 +1,35 @@
 import React from 'react'
 import { useGrievances, useGrievanceStats } from '../../hooks/useGrievance'
 import './Dashboard.css'
+import { FaEye, FaEdit, FaTimesCircle } from 'react-icons/fa'
+import { useState } from 'react'
+
+import GrievanceModal from '../../modal/Grievance/GrievanceModal';
+
+
+
 
 const Dashboard = () => {
   // Fetch data from backend fetch 10 record from backend 
   const { grievances, loading: grievanceLoading, currentPage, totalPages, totalElements, pageSize, goToPage } = useGrievances(0, 10)
   // fetch total counts 
   const { stats, loading: statsLoading } = useGrievanceStats()
+
+  const [isModalOpen, setIsModalOpen] = useState(false)
+const [selectedGrievance, setSelectedGrievance] = useState(null)
+const [modalMode, setModalMode] = useState('view')
+
+const handleView = (grievance) => {
+  setSelectedGrievance(grievance) // data set
+  setModalMode('view')            // view mode
+  setIsModalOpen(true)            // modal open
+}
+const handleEdit = (grievance) => {
+  setSelectedGrievance(grievance)
+  setModalMode('edit')
+  setIsModalOpen(true)
+}
+
 
   const handleNextPage = () => {
     goToPage(currentPage + 1)
@@ -15,6 +38,15 @@ const Dashboard = () => {
   const handlePreviousPage = () => {
     if (currentPage > 0) goToPage(currentPage - 1)
   }
+
+ 
+
+
+
+const handleClose = (id) => {
+  console.log('Close grievance', id)
+  // later: call close API
+}
 
   return (
     <div className="dashboard-wrapper">
@@ -88,7 +120,29 @@ const Dashboard = () => {
                         {grievance.status === 'RESOLVED' && <span className="chip-green">Resolved</span>}
                       </td>
                       <td>{new Date(grievance.createdAt).toLocaleDateString()}</td>
-                      <td>📄</td>
+                     <td className="action-icons">
+  {/* View */}
+  <FaEye
+    className="icon view-icon"
+    title="View Grievance"
+    onClick={() => handleView(grievance)}
+  />
+
+  {/* Edit */}
+  <FaEdit
+    className="icon edit-icon"
+    title="Edit Grievance"
+    onClick={() => handleEdit(grievance)}
+  />
+
+  {/* Close */}
+  <FaTimesCircle
+    className="icon close-icon"
+    title="Close Grievance"
+    onClick={() => handleClose(grievance.grievanceId)}
+  />
+</td>
+
                     </tr>
                   ))}
                 </tbody>
@@ -114,6 +168,13 @@ const Dashboard = () => {
           <p>No grievances found</p>
         )}
       </div>
+      <GrievanceModal
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  grievance={selectedGrievance}
+  mode={modalMode}
+/>
+
     </div>
   )
 }
