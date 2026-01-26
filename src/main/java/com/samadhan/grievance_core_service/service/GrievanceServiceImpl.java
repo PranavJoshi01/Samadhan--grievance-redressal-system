@@ -5,6 +5,7 @@ import com.samadhan.grievance_core_service.dto.GrievanceStatusChangedRequestDto;
 import com.samadhan.grievance_core_service.dto.GrievanceResponseDto;
 import com.samadhan.grievance_core_service.exception.ResourceAccessNotAllowed;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
@@ -101,24 +102,18 @@ public class GrievanceServiceImpl implements GrievanceService {
             String role,
             Long deptId
     ) {
-
         Pageable pageable = PageRequest.of(page, size);
 
         if ("ADMIN".equalsIgnoreCase(role)) {
-            // ADMIN → all grievances
             return grievanceRepository.findAll(pageable);
         }
 
         if ("USER".equalsIgnoreCase(role)) {
-            // USER → only grievances created by user
-            return grievanceRepository
-                    .findByCreatedByUserId(userId, pageable);
+            return grievanceRepository.findByCreatedByUserId(userId, null, pageable);
         }
 
         if ("AUTHORITY".equalsIgnoreCase(role)) {
-            // AUTHORITY → grievances assigned to authority / department
-            return grievanceRepository
-                    .findByAssignedAuthorityId(deptId, pageable);
+            return grievanceRepository.findByAssignedAuthorityId(deptId, null, pageable);
         }
 
         throw new IllegalArgumentException("Invalid role: " + role);
@@ -133,9 +128,33 @@ public class GrievanceServiceImpl implements GrievanceService {
             int size,
             Long userId,
             String role,
-            Long deptId
+            Long deptId,
+            String status
     ) {
-        Page<Grievances> grievancesPage = getAllGrievancesByRole(page, size, userId, role, deptId);
+        // Convert status string to enum if provided
+        GrievanceStatus statusEnum = null;
+        if (status != null && !status.isEmpty()) {
+            try {
+                statusEnum = GrievanceStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                logger.warn("Invalid status filter: {}", status);
+            }
+        }
+        
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Grievances> grievancesPage;
+        
+        // Use existing methods with status parameter
+        if ("ADMIN".equalsIgnoreCase(role)) {
+            grievancesPage = grievanceRepository.findAll(statusEnum, pageable);
+        } else if ("USER".equalsIgnoreCase(role)) {
+            grievancesPage = grievanceRepository.findByCreatedByUserId(userId, statusEnum, pageable);
+        } else if ("AUTHORITY".equalsIgnoreCase(role)) {
+            grievancesPage = grievanceRepository.findByAssignedAuthorityId(deptId, statusEnum, pageable);
+        } else {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+        
         return grievancesPage.map(this::convertToResponseDto);
     }
 

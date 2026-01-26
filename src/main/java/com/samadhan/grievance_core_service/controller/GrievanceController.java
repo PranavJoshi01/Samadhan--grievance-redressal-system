@@ -57,7 +57,8 @@ public class GrievanceController {
 @GetMapping
 public ResponseEntity<Page<GrievanceResponseDto>> getAllGrievancesByRole(
 		@RequestParam int page,
-		@RequestParam int size
+		@RequestParam int size,
+		@RequestParam(required = false) String status
 ) {
 	
 	// ✅ HARDCODED VALUES FOR NOW (matching /count API)
@@ -67,7 +68,7 @@ public ResponseEntity<Page<GrievanceResponseDto>> getAllGrievancesByRole(
 	
     Page<GrievanceResponseDto> grievances =
             grievanceService.getAllGrievancesByRoleWithDTO(
-                    page, size, userId, role, deptId
+                    page, size, userId, role, deptId, status
             );
 
     return ResponseEntity.ok(grievances);

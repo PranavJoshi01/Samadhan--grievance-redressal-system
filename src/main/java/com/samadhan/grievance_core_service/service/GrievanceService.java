@@ -35,5 +35,5 @@ public interface GrievanceService {
     		String message
     		);
 
-    Page<GrievanceResponseDto> getAllGrievancesByRoleWithDTO(int page, int size, Long userId, String role, Long deptId);
+    Page<GrievanceResponseDto> getAllGrievancesByRoleWithDTO(int page, int size, Long userId, String role, Long deptId, String status);
 }

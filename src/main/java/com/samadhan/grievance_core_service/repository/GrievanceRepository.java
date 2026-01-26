@@ -30,13 +30,16 @@ public interface GrievanceRepository extends JpaRepository<Grievances,Long> {
 			
 			
 	@EntityGraph(attributePaths = {"grievanceMedia"})
-	Page<Grievances> findAll(Pageable pageable);
+	@Query("SELECT g FROM Grievances g WHERE (:status IS NULL OR g.status = :status)")
+	Page<Grievances> findAll(@Param("status") com.samadhan.grievance_core_service.constants.GrievanceStatus status, Pageable pageable);
 
 	@EntityGraph(attributePaths = {"grievanceMedia"})
-	Page<Grievances> findByCreatedByUserId(Long userId, Pageable pageable);
+	@Query("SELECT g FROM Grievances g WHERE g.createdByUserId = :userId AND (:status IS NULL OR g.status = :status)")
+	Page<Grievances> findByCreatedByUserId(@Param("userId") Long userId, @Param("status") com.samadhan.grievance_core_service.constants.GrievanceStatus status, Pageable pageable);
 
 	@EntityGraph(attributePaths = {"grievanceMedia"})
-	Page<Grievances> findByAssignedAuthorityId(Long deptId, Pageable pageable);
+	@Query("SELECT g FROM Grievances g WHERE g.assignedAuthorityId = :deptId AND (:status IS NULL OR g.status = :status)")
+	Page<Grievances> findByAssignedAuthorityId(@Param("deptId") Long deptId, @Param("status") com.samadhan.grievance_core_service.constants.GrievanceStatus status, Pageable pageable);
 	
 
     @Query("""
