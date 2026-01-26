@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
   GRIEVANCE: {
     CREATE: '/grievance',
     GET_ALL: '/grievance',
+    GET_COUNT: '/grievance/count',
     UPDATE: (id) => `/grievance/${id}`,
     DELETE: (id) => `/grievance/${id}`,
   },

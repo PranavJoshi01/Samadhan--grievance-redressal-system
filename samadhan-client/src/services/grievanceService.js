@@ -122,3 +122,35 @@ export const deleteGrievance = async (id) => {
     throw error;
   }
 };
+/**
+ * Fetch grievances with pagination
+ * @param {Object} filters - Filter options { page, size }
+ * @returns {Promise<Object>} Paginated response
+ */
+export const fetchGrievancesWithFilters = async (filters = {}) => {
+  try {
+    const params = {
+      page: filters.page || 0,
+      size: filters.size || 10,
+    };
+    const response = await axiosInstance.get(API_ENDPOINTS.GRIEVANCE.GET_ALL, { params });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching grievances:', error);
+    throw error;
+  }
+};
+
+/**
+ * Fetch grievance statistics
+ * @returns {Promise<Object>} Stats object with counts
+ */
+export const fetchGrievanceStats = async () => {
+  try {
+    const response = await axiosInstance.get(API_ENDPOINTS.GRIEVANCE.GET_COUNT);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching stats:', error);
+    throw error;
+  }
+};
