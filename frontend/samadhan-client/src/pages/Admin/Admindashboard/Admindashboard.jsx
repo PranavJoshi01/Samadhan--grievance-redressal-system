@@ -1,8 +1,10 @@
 import React, { useState } from "react";   // ✅ ADD: useState ONLY
+//import React, { useState, useEffect } from "react";
 import "./Admindashbord.css";
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import { addDepartment } from "../../../services/grievanceService";
+
 
 export default function Admindashboard() {
   const navigate = useNavigate();
@@ -11,6 +13,7 @@ export default function Admindashboard() {
   const [showAddDeptModal, setShowAddDeptModal] = useState(false);
 const [departmentName, setDepartmentName] = useState("");
 const [description, setDescription] = useState("");
+
 
 const handleAddDepartment = async () => {
   console.log("sending to backend", departmentName, description);
@@ -27,6 +30,10 @@ const handleAddDepartment = async () => {
   setShowAddDeptModal(false);
 };
 
+
+
+
+ 
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -87,7 +94,7 @@ const handleAddDepartment = async () => {
               </tr>
             </thead>
 
-            <tbody>
+           <tbody>
               <tr>
                 <td>
                   <strong>Pothole on Main Street</strong>
