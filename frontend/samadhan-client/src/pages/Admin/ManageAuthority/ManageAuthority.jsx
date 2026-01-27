@@ -1,16 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import AddAuthorityModel from "./AddAuthorityModel";
-import { fetchCategories } from "../../../services/grievanceService";
 
 const ManageAuthority = () => {
   const [openModal, setOpenModal] = useState(false);
-  
-
-  useEffect(() => {
-  fetchCategories().then((res) => setCategories(res));
-  
-}, []);
 
   const [authorities, setAuthorities] = useState([
     {
@@ -47,11 +40,6 @@ const ManageAuthority = () => {
     },
   ]);
 
-  const [categories, setCategories] = useState([]);
-  useEffect(() => {
-  fetchCategories().then((res) => setCategories(res));
-}, []);
-
   // Summary data
   const totalAuthorities = authorities.length;
   const activeAssignments = authorities.reduce(
@@ -67,27 +55,7 @@ const ManageAuthority = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <AddAuthorityModel
-  isOpen={openModal}
-  onClose={() => setOpenModal(false)}
-  onSave={(form) => {
-    const selectedDept = categories.find(
-      (c) => c.categoryId == form.departmentId
-    );
-
-    const newAuth = {
-      id: Date.now(),
-      name: form.name,
-      department: selectedDept?.categoryName || "",
-      email: form.email,
-      assignedIssue: "0 issues",
-      status: "Active",
-    };
-
-    setAuthorities((prev) => [...prev, newAuth]);
-    setOpenModal(false);
-  }}
-/>
+      
 
       <div className="p-8">
         {/* Heading */}

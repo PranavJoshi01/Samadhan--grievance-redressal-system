@@ -8,7 +8,7 @@ import {
   FaLock,
   FaArrowRight,
 } from "react-icons/fa";
-import { API_BASE_URL, API_ENDPOINTS } from "../../constants/apiConfig";
+import { API_BASE_URL,API_AUTH_BASE_URL, API_ENDPOINTS } from "../../constants/apiConfig";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -48,7 +48,7 @@ const Register = () => {
 
       //  real backend register
 
-      const response = await fetch(API_BASE_URL + API_ENDPOINTS.AUTH.REGISTER, {
+      const response = await fetch(API_AUTH_BASE_URL + API_ENDPOINTS.AUTH.REGISTER, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

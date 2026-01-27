@@ -1,37 +1,45 @@
-import { Link } from "react-router-dom";
+import React from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { NAV_ITEMS } from '../../constants/navConfig'
+import './Navbar.css'
 
-function Navbar() {
+const Navbar = () => {
+  const navigate = useNavigate()
+
+  const role = localStorage.getItem('role') || 'USER'
+  const menuItems = NAV_ITEMS[role] || []
+
+  const handleLogout = () => {
+    localStorage.clear()
+    navigate('/login')
+  }
+
   return (
-    <nav className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg w-full">
-      <div className="w-full px-6 py-4 flex items-center justify-between">
-        <Link
-          to="/"
-          className="text-xl font-bold hover:text-gray-200"
-        >
-          Samadhan
-        </Link>
+    <nav className="navbar">
+      {/* Left */}
+      <div className="navbar-logo">
+        Samadhan
+      </div>
 
-        <ul className="flex space-x-6 items-center text-sm font-medium">
-          <li>
-            <Link
-              to="/feedback"
-              className="hover:text-gray-200 transition"
-            >
-              Feedback
+      {/* Center menu */}
+      <ul className="navbar-menu">
+        {menuItems.map((item) => (
+          <li key={item.path} className="navbar-item">
+            <Link to={item.path} className="navbar-link">
+              {item.label}
             </Link>
           </li>
-          <li>
-            <Link
-              to="/login"
-              className="bg-red-500 px-4 py-1 rounded-md hover:bg-red-600 transition"
-            >
-              Login
-            </Link>
-          </li>
-        </ul>
+        ))}
+      </ul>
+
+      {/* Right */}
+      <div className="navbar-actions">
+        <button className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </nav>
-  );
+  )
 }
 
-export default Navbar;
+export default Navbar

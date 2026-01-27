@@ -25,6 +25,12 @@ const Dashboard = () => {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [grievanceToClose, setGrievanceToClose] = useState(null)
   const [isClosing, setIsClosing] = useState(false)
+  const [role, setRole] = useState("");
+
+useEffect(() => {
+  const storedRole = localStorage.getItem("role");
+  setRole(storedRole);
+}, []);
 
 const handleView = (grievance) => {
   setSelectedGrievance(grievance) // data set
@@ -90,7 +96,7 @@ const handleCancelClose = () => {
     <div className="dashboard-wrapper">
       {/* Page Title */}
       <div className="page-title-section">
-        <h2 className="dashboard-title">User Dashboard</h2>
+        <h2 className="dashboard-title">{role === "ADMIN" ? "Admin" : "User"} Dashboard</h2>
         <p className="dashboard-subtitle">Manage your reported grievances and track their progress</p>
       </div>
 
@@ -133,7 +139,7 @@ const handleCancelClose = () => {
         >
           <option value="">All</option>
           <option value="PENDING">Pending</option>
-          <option value="ASSIGNED">In Progress</option>
+          <option value="IN_PROGRESS">In Progress</option>
           <option value="RESOLVED">Resolved</option>
           <option value="CLOSED">Closed</option>
         </select>
@@ -170,7 +176,7 @@ const handleCancelClose = () => {
                       <td><span className="chip-gray">{grievance.category?.categoryName}</span></td>
                       <td>
                         {grievance.status === 'PENDING' && <span className="chip-orange">Pending</span>}
-                        {grievance.status === 'ASSIGNED' && <span className="chip-blue">In Progress</span>}
+                        {grievance.status === 'IN_PROGRESS' && <span className="chip-blue">In Progress</span>}
                         {grievance.status === 'RESOLVED' && <span className="chip-green">Resolved</span>}
                         {grievance.status === 'CLOSED' && <span className="chip-gray">Closed</span>}
                       </td>
