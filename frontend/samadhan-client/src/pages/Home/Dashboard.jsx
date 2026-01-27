@@ -25,6 +25,12 @@ const Dashboard = () => {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [grievanceToClose, setGrievanceToClose] = useState(null)
   const [isClosing, setIsClosing] = useState(false)
+  const [role, setRole] = useState("");
+
+useEffect(() => {
+  const storedRole = localStorage.getItem("role");
+  setRole(storedRole);
+}, []);
 
 const handleView = (grievance) => {
   setSelectedGrievance(grievance) // data set
@@ -90,7 +96,7 @@ const handleCancelClose = () => {
     <div className="dashboard-wrapper">
       {/* Page Title */}
       <div className="page-title-section">
-        <h2 className="dashboard-title">User Dashboard</h2>
+        <h2 className="dashboard-title">{role === "ADMIN" ? "Admin" : "User"} Dashboard</h2>
         <p className="dashboard-subtitle">Manage your reported grievances and track their progress</p>
       </div>
 

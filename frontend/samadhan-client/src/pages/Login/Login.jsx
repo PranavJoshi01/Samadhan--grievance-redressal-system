@@ -53,6 +53,7 @@ function Login() {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("role", data.role);
 
       toast.success("Login successful!");
       navigate("/user/home");

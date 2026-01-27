@@ -9,7 +9,7 @@ export default function ManageIssues() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <AdminNavbar />
+     
       <div className="p-10">
 
       {/* BACK + TITLE */}

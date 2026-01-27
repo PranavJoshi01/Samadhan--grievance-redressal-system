@@ -30,7 +30,7 @@ const handleAddDepartment = async () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <AdminNavbar  onAddDepartment={() => setShowAddDeptModal(true)} />
+      {/* <AdminNavbar  onAddDepartment={() => setShowAddDeptModal(true)} /> */}
 
       {/* Page Title */}
       <div className="page-title-section">

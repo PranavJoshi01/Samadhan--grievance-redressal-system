@@ -45,7 +45,7 @@ export const Home = () => {
 
   return (
     <>
-      {isLoggedIn ? <NavbarUser /> : <Navbar />}
+      {/* {isLoggedIn ? <NavbarUser /> : <Navbar />} */}
 
       {/* Show slider + about section ONLY on Home page */}
       {isHomePage && (

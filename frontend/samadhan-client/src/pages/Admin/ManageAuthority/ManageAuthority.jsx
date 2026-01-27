@@ -55,7 +55,7 @@ const ManageAuthority = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <AdminNavbar />
+      
 
       <div className="p-8">
         {/* Heading */}

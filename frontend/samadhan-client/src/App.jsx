@@ -18,6 +18,7 @@ import Dashboard from './pages/Home/Dashboard';
 import Feedback from './pages/Feedback/Feedback';
 import Notifications from './pages/Notifications/Notifications';
 import AddDepartment from './pages/Admin/Admindashboard/AddDepartment';
+import Navbar from './components/Navbar/Navbar';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
   return (
     <>
       <div>
+        <Navbar /> 
         <Routes>
           <Route
           path='/'
