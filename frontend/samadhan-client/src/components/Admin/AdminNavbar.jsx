@@ -44,11 +44,13 @@ function AdminNavbar({ onAddDepartment }) {
             </li>
             <li>
               <button
-  onClick={onAddDepartment}
-  className="bg-white text-blue-600 px-3 py-1 rounded text-sm font-medium"
+type="button"
+onClick={onAddDepartment}
+className="bg-white text-blue-600 px-3 py-1 rounded text-sm font-medium"
 >
-  + Add Department
++ Add Department
 </button>
+
             </li>
 
           {/* Logout */}

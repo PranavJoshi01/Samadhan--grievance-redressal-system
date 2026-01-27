@@ -2,12 +2,31 @@ import React, { useState } from "react";   // ✅ ADD: useState ONLY
 import "./Admindashbord.css";
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../../../components/Admin/AdminNavbar";
+import { addDepartment } from "../../../services/grievanceService";
 
 export default function Admindashboard() {
   const navigate = useNavigate();
 
   // ✅ ADD: modal state (sirf ye line add)
   const [showAddDeptModal, setShowAddDeptModal] = useState(false);
+const [departmentName, setDepartmentName] = useState("");
+const [description, setDescription] = useState("");
+
+const handleAddDepartment = async () => {
+  console.log("sending to backend", departmentName, description);
+
+  await addDepartment({
+    categoryName: departmentName, // ⚠️ backend field
+    description: description,
+  });
+
+  alert("Department added ✅");
+
+  setDepartmentName("");
+  setDescription("");
+  setShowAddDeptModal(false);
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -121,16 +140,20 @@ export default function Admindashboard() {
       <div className="mb-3">
         <label className="text-sm font-medium">Department Name</label>
         <input
-          type="text"
-          className="w-full mt-1 border rounded px-3 py-2"
-        />
+type="text"
+value={departmentName}
+onChange={(e) => setDepartmentName(e.target.value)}
+className="w-full mt-1 border rounded px-3 py-2"
+/>
       </div>
 
       <div className="mb-4">
         <label className="text-sm font-medium">Description</label>
         <textarea
-          className="w-full mt-1 border rounded px-3 py-2"
-        />
+value={description}
+onChange={(e) => setDescription(e.target.value)}
+className="w-full mt-1 border rounded px-3 py-2"
+/>
       </div>
 
       <div className="flex justify-end gap-3">
@@ -144,16 +167,11 @@ export default function Admindashboard() {
 
         {/* Submit */}
         <button
-          onClick={() => {
-            // 🔥 future me yahi backend call hoga
-            // axios.post("/department", data)
-
-            setShowAddDeptModal(false); // ✅ CLOSE MODAL
-          }}
-          className="px-4 py-1 bg-blue-600 text-white rounded text-sm"
-        >
-          Add Department
-        </button>
+  onClick={handleAddDepartment}
+  className="px-4 py-1 bg-blue-600 text-white rounded text-sm"
+>
+  Add Department
+</button>
       </div>
     </div>
   </div>

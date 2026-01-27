@@ -186,4 +186,25 @@ export const updateGrievanceStatus = async (grievanceId, status) => {
     console.error('Error updating grievance status:', error);
     throw error;
   }
+
+
+
+};
+
+
+
+/**
+ * Add new department / category
+ * @param {Object} data - { categoryName, description }
+ * @returns {Promise<Object>}
+ */
+// services/grievanceService.js
+
+export const addDepartment = async (data) => {
+  const response = await axiosInstance.post(
+    API_ENDPOINTS.CATEGORY.ADD_DEPARTMENT,
+    data
+  );
+  return response.data;
+
 };

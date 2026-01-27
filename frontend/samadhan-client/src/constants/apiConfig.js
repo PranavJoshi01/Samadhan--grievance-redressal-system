@@ -18,5 +18,8 @@ export const API_ENDPOINTS = {
   CATEGORY: {
     GET_ALL: "/category",
     GET_BY_ID: (id) => `/category/${id}`,
+
+
+    ADD_DEPARTMENT: "/category/add-department",
   },
 };
