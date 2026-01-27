@@ -21,6 +21,6 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (id) => `/category/${id}`,
 
 
-    ADD_DEPARTMENT: "/category/add-department",
+    ADD_DEPARTMENT: "/category",
   },
 };
