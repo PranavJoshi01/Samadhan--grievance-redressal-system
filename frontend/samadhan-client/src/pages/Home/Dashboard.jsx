@@ -133,7 +133,7 @@ const handleCancelClose = () => {
         >
           <option value="">All</option>
           <option value="PENDING">Pending</option>
-          <option value="ASSIGNED">In Progress</option>
+          <option value="IN_PROGRESS">In Progress</option>
           <option value="RESOLVED">Resolved</option>
           <option value="CLOSED">Closed</option>
         </select>
@@ -170,7 +170,7 @@ const handleCancelClose = () => {
                       <td><span className="chip-gray">{grievance.category?.categoryName}</span></td>
                       <td>
                         {grievance.status === 'PENDING' && <span className="chip-orange">Pending</span>}
-                        {grievance.status === 'ASSIGNED' && <span className="chip-blue">In Progress</span>}
+                        {grievance.status === 'IN_PROGRESS' && <span className="chip-blue">In Progress</span>}
                         {grievance.status === 'RESOLVED' && <span className="chip-green">Resolved</span>}
                         {grievance.status === 'CLOSED' && <span className="chip-gray">Closed</span>}
                       </td>
