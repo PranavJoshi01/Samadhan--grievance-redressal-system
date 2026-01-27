@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import AddAuthorityModel from "./AddAuthorityModel";
+import AddDepartmentModal from "./AddDepartmentModal";
+import { addDepartment } from "../../../services/grievanceService";
 
 const ManageAuthority = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [openAddDept, setOpenAddDept] = useState(false);
+  const [departmentName, setDepartmentName] = useState("");
+  const [description, setDescription] = useState("");
 
   const [authorities, setAuthorities] = useState([
     {
@@ -52,6 +57,19 @@ const ManageAuthority = () => {
   const handleEdit = (id) => {
     console.log("Edit authority:", id);
   };
+  const handleAddDepartment = async ({ departmentName, description }) => {
+      console.log("sending to backend", departmentName, description);
+
+      // API call
+      await addDepartment({
+        categoryName: departmentName,
+        description: description,
+      });
+
+      alert("Department added ✅");
+      setOpenAddDept(false);
+    };
+
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -69,12 +87,19 @@ const ManageAuthority = () => {
             </p>
           </div>
 
+            <button
+                    onClick={() => setOpenAddDept(true)}
+                    className="bg-blue-600 text-white px-4 py-2 rounded text-sm"
+                  >
+                    + Add Department
+                  </button>
+
           <button
-            onClick={() => setOpenModal(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow"
-          >
-            + Add Authority
-          </button>
+                      onClick={() => setOpenModal(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow"
+                    >
+                      + Add Authority
+                    </button>
         </div>
 
         {/* Summary Cards */}
@@ -182,6 +207,11 @@ const ManageAuthority = () => {
             }}
           />
         )}
+    <AddDepartmentModal
+            open={openAddDept}
+            onClose={() => setOpenAddDept(false)}
+            onSubmit={handleAddDepartment}
+          />
       </div>
     </div>
   );
