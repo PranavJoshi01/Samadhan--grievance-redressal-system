@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaArrowRight } from "react-icons/fa";
-import { API_BASE_URL, API_ENDPOINTS } from "../../constants/apiConfig";
+import { API_AUTH_BASE_URL, API_ENDPOINTS } from "../../constants/apiConfig";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -39,7 +39,7 @@ function Login() {
 
       // API LOGIN (this the actual 1 4 when the auth service is up & runnin)
 
-      const response = await fetch(API_BASE_URL + API_ENDPOINTS.AUTH.LOGIN, {
+      const response = await fetch(API_AUTH_BASE_URL + API_ENDPOINTS.AUTH.LOGIN, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
