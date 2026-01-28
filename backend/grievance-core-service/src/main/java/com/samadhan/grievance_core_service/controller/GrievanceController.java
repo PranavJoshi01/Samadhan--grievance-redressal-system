@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,10 +40,14 @@ public class GrievanceController {
     // To create a new grevience
 @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createGrievance(@Valid @RequestPart("data") GrievanceDto grievanceDto,
-                                             @RequestPart(value = "media", required = false) MultipartFile[] media
+                                             @RequestPart(value = "media", required = false) MultipartFile[] media,
+                                             @RequestHeader("Authorization") String authHeader
                                              ){
+    String token = authHeader.substring(7);
+    Long userId = jwtUtil.extractUserId(token);
+    String role = jwtUtil.extractRole(token);
     logger.info("in grievance create controller");
-      grievanceService.createGrievance(grievanceDto,media,123L);
+      grievanceService.createGrievance(grievanceDto,media,userId);
     return  ResponseEntity.ok(
              "Grievance created successfully"
 
@@ -58,7 +63,7 @@ public class GrievanceController {
     String role = jwtUtil.extractRole(token);
 
     logger.info("Entered in count API for user");
-    GrievanceStatsDto status =grievanceService.getGrievanceCountByStatus(124L,"ADMIN",1L);
+    GrievanceStatsDto status =grievanceService.getGrievanceCountByStatus(userId,role,1L);
     return ResponseEntity.ok().body(status);
 
 }
@@ -68,13 +73,15 @@ public class GrievanceController {
 public ResponseEntity<Page<GrievanceResponseDto>> getAllGrievancesByRole(
 		@RequestParam int page,
 		@RequestParam int size,
-		@RequestParam(required = false) String status
+		@RequestParam(required = false) String status,
+        @RequestHeader("Authorization") String authHeader
 ) {
-	
-	// ✅ HARDCODED VALUES FOR NOW (matching /count API)
-	Long userId = 123L;           // Will be fetched from JWT token later
-	String role = "ADMIN";         // Will be fetched from JWT token later (matching /count)
-	Long deptId = 1L;              // Will be fetched from JWT token later
+
+    String token = authHeader.substring(7);
+    Long userId = jwtUtil.extractUserId(token);
+    String role = jwtUtil.extractRole(token);
+    Long deptId = 1L;
+    // Will be fetched from JWT token later
 	
     Page<GrievanceResponseDto> grievances =
             grievanceService.getAllGrievancesByRoleWithDTO(
@@ -91,9 +98,17 @@ public ResponseEntity<Page<GrievanceResponseDto>> getAllGrievancesByRole(
         logger.info("Grievance {} updated successfully", id);
         return ResponseEntity.ok("Grievance updated successfully");
     }
+
     @PutMapping("/statusChange")
-    public ResponseEntity<?> settingStatus(@RequestBody GrievanceStatusChangedRequestDto grievanceStatusChangedRequestDto){
-        grievanceService.settingStatus(grievanceStatusChangedRequestDto,123L,"ADMIN");
+    public ResponseEntity<?> settingStatus(@RequestBody GrievanceStatusChangedRequestDto grievanceStatusChangedRequestDto,
+                                           @RequestHeader("Authorization") String authHeader
+                                           ){
+        String token = authHeader.substring(7);
+        Long userId = jwtUtil.extractUserId(token);
+        String role = jwtUtil.extractRole(token);
+        Long deptId = 1L;
+        // Will be fetched from
+    grievanceService.settingStatus(grievanceStatusChangedRequestDto,userId,role);
         return ResponseEntity.ok("Grievance status updated");
     }
 
@@ -102,30 +117,14 @@ public ResponseEntity<?> assignAuthorityAndUpdateStatus(
         @PathVariable Long grievanceId,
         @RequestBody AssignGrievanceRequestDto request
 ) {
-
-    grievanceService.assignAuthorityAndUpdateStatus(
-            grievanceId,
-            request.getAuthorityId(),
-            request.getStatus(),
-            request.getMessage()
-    );
+        grievanceService.assignAuthorityAndUpdateStatus(
+                grievanceId,
+                request.getAuthorityId(),
+                request.getStatus(),
+                request.getMessage()
+        );
 
     return ResponseEntity.ok().build();
 }
-
-//@GetMapping("/count")
-//public ResponseEntity<?> getGrievanceCountByStatus(
-//        @RequestParam Long userId,
-//        @RequestParam String role,
-//        @RequestParam(required = false) Long deptId
-//) {
-//    GrievanceStatsDto status =
-//        grievanceService.getGrievanceCountByStatus(
-//            userId, role, deptId
-//        );
-//    return ResponseEntity.ok(status);
-//}
-
-
 
 }

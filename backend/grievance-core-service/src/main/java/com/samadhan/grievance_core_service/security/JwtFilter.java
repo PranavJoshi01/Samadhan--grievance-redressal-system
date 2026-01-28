@@ -22,7 +22,10 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return "OPTIONS".equalsIgnoreCase(request.getMethod());
+    }
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -41,6 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
             token = authHeader.substring(7);
             email = jwtUtil.extractUsername(token);
             role = jwtUtil.extractRole(token);
+
         }
 
         // 2️⃣ If valid token & no auth present
