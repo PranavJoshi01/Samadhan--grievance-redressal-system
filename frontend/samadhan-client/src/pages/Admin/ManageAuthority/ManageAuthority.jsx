@@ -1,14 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import AddAuthorityModel from "./AddAuthorityModel";
 import AddDepartmentModal from "./AddDepartmentModal";
 import { addDepartment } from "../../../services/grievanceService";
+import { fetchCategories } from "../../../services/grievanceService";
 
 const ManageAuthority = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openAddDept, setOpenAddDept] = useState(false);
   const [departmentName, setDepartmentName] = useState("");
   const [description, setDescription] = useState("");
+const [categories, setCategories] = useState([]);
+
+
+
+const loadCategories = () => {
+fetchCategories().then((res) => setCategories(res));
+};
+
+
+useEffect(() => {
+loadCategories();
+}, []);
 
   const [authorities, setAuthorities] = useState([
     {
@@ -57,18 +70,7 @@ const ManageAuthority = () => {
   const handleEdit = (id) => {
     console.log("Edit authority:", id);
   };
-  const handleAddDepartment = async ({ departmentName, description }) => {
-      console.log("sending to backend", departmentName, description);
-
-      // API call
-      await addDepartment({
-        categoryName: departmentName,
-        description: description,
-      });
-
-      alert("Department added ✅");
-      setOpenAddDept(false);
-    };
+  
 
 
   return (
@@ -186,34 +188,42 @@ const ManageAuthority = () => {
         </div>
 
         {/* Modal */}
+
         {openModal && (
-          <AddAuthorityModel
-            isOpen={openModal}
-            onClose={() => setOpenModal(false)}
-            onSave={(form) => {
-              const newId = authorities.length
-                ? Math.max(...authorities.map((a) => a.id)) + 1
-                : 1;
-              const newAuth = {
-                id: newId,
-                name: form.name,
-                department: form.department,
-                email: form.email,
-                assignedIssue: "0",
-                status: "Active",
-              };
-              setAuthorities((prev) => [...prev, newAuth]);
-              setOpenModal(false);
-            }}
-          />
-        )}
-    <AddDepartmentModal
-            open={openAddDept}
-            onClose={() => setOpenAddDept(false)}
-            onSubmit={handleAddDepartment}
-          />
-      </div>
+  <AddAuthorityModel
+    isOpen={openModal}
+    onClose={() => setOpenModal(false)}
+    onSave={(form) => {
+      const selectedDept = categories.find(
+        (c) => String(c.categoryId) === String(form.departmentId)
+      );
+
+      const newAuthority = {
+        id: Date.now(),
+        name: form.name,
+        email: form.email,
+        department: selectedDept?.categoryName || "",
+        assignedIssue: "0",
+        status: "Active",
+      };
+
+      setAuthorities((prev) => [...prev, newAuthority]);
+      setOpenModal(false);
+    }}
+  />
+)}
+        
+   {openAddDept && (
+<AddDepartmentModal
+onClose={() => setOpenAddDept(false)}
+onSuccess={() => {
+setOpenAddDept(false);
+loadCategories(); // dropdown refresh
+}}
+/>
+)}
     </div>
+    </div>  
   );
 };
 

@@ -191,16 +191,22 @@ const AddAuthorityModel = ({ isOpen, onClose, onSave }) => {
    
         {/* Buttons */}
         <div className="flex justify-end gap-3">
-          <button className="border px-4 py-2" onClick={onClose}>
-            Cancel
-          </button>
-        
           <button
-            className="bg-blue-600 text-white px-4 py-2"
-            onClick={handleSubmit}
-          >
-            Create Authority
-          </button>
+type="button"
+className="border px-4 py-2"
+onClick={onClose}
+>
+Cancel
+</button>
+
+
+<button
+type="button"
+className="bg-blue-600 text-white px-4 py-2"
+onClick={handleSubmit}
+>
+Create Authority
+</button>
         </div>
       </div>
     </div>

@@ -1,68 +1,57 @@
 import React, { useState } from "react";
+import { addDepartment } from "../../../services/grievanceService";
 
-const AddDepartmentModal = ({ open, onClose, onSubmit }) => {
+const AddDepartmentModal = ({ onClose, onSuccess }) => {
   const [departmentName, setDepartmentName] = useState("");
   const [description, setDescription] = useState("");
 
-  if (!open) return null;
+  const handleSave = async () => {
+    await addDepartment({
+      categoryName: departmentName,
+      description: description,
+    });
 
-  const handleSubmit = () => {
-    if (!departmentName.trim() || !description.trim()) {
-      alert("Please fill in all fields");
-      return;
-    }
-    onSubmit({ departmentName, description });
-    setDepartmentName("");
-    setDescription("");
+    alert("Department added ✅");
+    onSuccess(); // parent ko bole: close + refresh
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-500 bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 relative">
-        {/* Close button */}
-        <button
-          className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl font-bold"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          &times;
-        </button>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white p-6 w-96 rounded">
+        <h2 className="text-xl mb-4">Add Department</h2>
 
-        <h2 className="text-xl font-semibold mb-6 text-center">Add Department</h2>
+        {/* Department Name */}
+        <input
+          className="border w-full p-2 mb-3"
+          placeholder="Department Name"
+          value={departmentName}
+          onChange={(e) => setDepartmentName(e.target.value)}
+        />
 
-        <label className="block mb-4">
-          <input
-            type="text"
-            placeholder="Department Name"
-            value={departmentName}
-            onChange={(e) => setDepartmentName(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </label>
+        {/* Description */}
+        <textarea
+          className="border w-full p-2 mb-4"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
-        <label className="block mb-6">
-          <textarea
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            rows={4}
-          />
-        </label>
-
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end gap-2">
           <button
-            onClick={onClose}
-            className="px-4 py-2 border rounded hover:bg-gray-100 transition"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
-            Save
-          </button>
+type="button"
+onClick={onClose}
+>
+Cancel
+</button>
+
+
+<button
+type="button"
+className="bg-blue-600 text-white px-3 py-1"
+onClick={handleSave}
+>
+Save
+</button>
         </div>
       </div>
     </div>
