@@ -4,6 +4,7 @@ package com.samadhan.grievance_core_service.controller;
 import com.samadhan.grievance_core_service.constants.GrievanceStatus;
 import com.samadhan.grievance_core_service.dto.*;
 import com.samadhan.grievance_core_service.entity.Grievances;
+import com.samadhan.grievance_core_service.security.JwtUtil;
 import com.samadhan.grievance_core_service.service.GrievanceService;
 import jakarta.validation.Valid;
 
@@ -29,6 +30,9 @@ public class GrievanceController {
     @Autowired
     private GrievanceService grievanceService;
 
+    @Autowired
+    private  JwtUtil jwtUtil;
+
     // Global Exception hanlder
     // centralised Logger
     //JWT
@@ -46,7 +50,13 @@ public class GrievanceController {
 }
 
 @GetMapping("/count")
-    public ResponseEntity<?> getGrievanceCountByStatus(){
+    public ResponseEntity<?> getGrievanceCountByStatus(@RequestHeader("Authorization") String authHeader){
+
+
+    String token = authHeader.substring(7);
+    Long userId = jwtUtil.extractUserId(token);
+    String role = jwtUtil.extractRole(token);
+
     logger.info("Entered in count API for user");
     GrievanceStatsDto status =grievanceService.getGrievanceCountByStatus(124L,"ADMIN",1L);
     return ResponseEntity.ok().body(status);
@@ -62,7 +72,7 @@ public ResponseEntity<Page<GrievanceResponseDto>> getAllGrievancesByRole(
 ) {
 	
 	// ✅ HARDCODED VALUES FOR NOW (matching /count API)
-	Long userId = 124L;           // Will be fetched from JWT token later
+	Long userId = 123L;           // Will be fetched from JWT token later
 	String role = "ADMIN";         // Will be fetched from JWT token later (matching /count)
 	Long deptId = 1L;              // Will be fetched from JWT token later
 	
