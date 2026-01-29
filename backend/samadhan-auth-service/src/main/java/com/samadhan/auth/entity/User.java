@@ -24,4 +24,8 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    private Long deptId;
+
+    private String deptName;
 }

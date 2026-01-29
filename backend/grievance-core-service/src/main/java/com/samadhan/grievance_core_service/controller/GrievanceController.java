@@ -61,9 +61,10 @@ public class GrievanceController {
     String token = authHeader.substring(7);
     Long userId = jwtUtil.extractUserId(token);
     String role = jwtUtil.extractRole(token);
+    Long deptId = jwtUtil.extractDeptId(token);
 
     logger.info("Entered in count API for user");
-    GrievanceStatsDto status =grievanceService.getGrievanceCountByStatus(userId,role,1L);
+    GrievanceStatsDto status =grievanceService.getGrievanceCountByStatus(userId,role,deptId);
     return ResponseEntity.ok().body(status);
 
 }
@@ -80,7 +81,7 @@ public ResponseEntity<Page<GrievanceResponseDto>> getAllGrievancesByRole(
     String token = authHeader.substring(7);
     Long userId = jwtUtil.extractUserId(token);
     String role = jwtUtil.extractRole(token);
-    Long deptId = 1L;
+    Long deptId = jwtUtil.extractDeptId(token);
     // Will be fetched from JWT token later
 	
     Page<GrievanceResponseDto> grievances =
@@ -106,7 +107,8 @@ public ResponseEntity<Page<GrievanceResponseDto>> getAllGrievancesByRole(
         String token = authHeader.substring(7);
         Long userId = jwtUtil.extractUserId(token);
         String role = jwtUtil.extractRole(token);
-        Long deptId = 1L;
+        Long deptId = jwtUtil.extractDeptId(token);
+
         // Will be fetched from
     grievanceService.settingStatus(grievanceStatusChangedRequestDto,userId,role);
         return ResponseEntity.ok("Grievance status updated");

@@ -54,6 +54,8 @@ function Login() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("role", data.role);
+      if (data.deptId) localStorage.setItem("deptId", data.deptId);
+      if (data.deptName) localStorage.setItem("deptName", data.deptName);
 
       toast.success("Login successful!");
       navigate("/user/home");

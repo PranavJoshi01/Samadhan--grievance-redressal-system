@@ -33,6 +33,10 @@ public class JwtUtil {
         return extractAllClaims(token).get("role", String.class);
     }
 
+    public Long extractDeptId(String token) {
+        return extractAllClaims(token).get("deptId", Long.class);
+    }
+
     // 🔹 Validate token (basic validation)
     public boolean isTokenValid(String token) {
         try {

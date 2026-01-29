@@ -1,84 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AdminNavbar from "../../../components/Admin/AdminNavbar";
 import AddAuthorityModel from "./AddAuthorityModel";
 import AddDepartmentModal from "./AddDepartmentModal";
-import { addDepartment } from "../../../services/grievanceService";
 import { fetchCategories } from "../../../services/grievanceService";
+import { toast } from "react-toastify";
+import { register } from "../../../services/authService";
+import { getAllAuthorities } from "../../../services/authService";
+
+
 
 const ManageAuthority = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openAddDept, setOpenAddDept] = useState(false);
-  const [departmentName, setDepartmentName] = useState("");
-  const [description, setDescription] = useState("");
-const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [authorities, setAuthorities] = useState([]);
 
+  // ✅ SAME SIMPLE LOADER (WORKING)
+  const loadCategories = () => {
+    fetchCategories()
+      .then((res) => setCategories(res))
+      .catch(() => setCategories([]));
+  };
 
-
-const loadCategories = () => {
-fetchCategories().then((res) => setCategories(res));
+  const loadAuthorities = () => {
+    console.log("fetch authority")
+  getAllAuthorities()
+    .then((res) => {
+      setAuthorities(Array.isArray(res) ? res : []);
+    })
+    .catch((err) => {
+      console.error("Failed to load authorities", err);
+      setAuthorities([]);
+    });
 };
 
-
-useEffect(() => {
-loadCategories();
-}, []);
-
-  const [authorities, setAuthorities] = useState([
-    {
-      id: 1,
-      name: "Road Department",
-      department: "Road & Transportation",
-      email: "roads@city.gov",
-      assignedIssue: "3 issues",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Sanitation Department",
-      department: "Waste & Sanitation",
-      email: "sanitation@city.gov",
-      assignedIssue: "1 issues",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Maintenance Department",
-      department: "Public Maintenance",
-      email: "maintenance@city.gov",
-      assignedIssue: "2 issues",
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Utilities Department",
-      department: "Utilities & Power",
-      email: "utilities@city.gov",
-      assignedIssue: "0 issues",
-      status: "Active",
-    },
-  ]);
-
-  // Summary data
-  const totalAuthorities = authorities.length;
-  const activeAssignments = authorities.reduce(
-    (total, a) => total + parseInt(a.assignedIssue),
-    0
-  );
-  const availableAuthorities = authorities.filter((a) => a.status === "Active")
-    .length;
-
-  const handleEdit = (id) => {
-    console.log("Edit authority:", id);
-  };
-  
-
+  useEffect(() => {
+    loadAuthorities(); 
+    loadCategories();
+   
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">
-      
+      <AdminNavbar />
 
       <div className="p-8">
-        {/* Heading */}
+        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-3xl font-semibold text-gray-800">
@@ -89,141 +56,113 @@ loadCategories();
             </p>
           </div>
 
+          <div className="flex gap-3">
             <button
-                    onClick={() => setOpenAddDept(true)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded text-sm"
-                  >
-                    + Add Department
-                  </button>
+              onClick={() => setOpenAddDept(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              + Add Department
+            </button>
 
-          <button
-                      onClick={() => setOpenModal(true)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow"
-                    >
-                      + Add Authority
-                    </button>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-gray-600 font-medium">Total Authorities</h2>
-            <p className="text-2xl font-bold mt-2">{totalAuthorities}</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-gray-600 font-medium">Active Assignments</h2>
-            <p className="text-2xl font-bold mt-2">{activeAssignments}</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow">
-            <h2 className="text-gray-600 font-medium">Available Authorities</h2>
-            <p className="text-2xl font-bold mt-2">{availableAuthorities}</p>
+            <button
+              onClick={() => setOpenModal(true)}
+              className="bg-blue-600 text-white px-4 py-2 rounded"
+            >
+              + Add Authority
+            </button>
           </div>
         </div>
 
-        {/* TABLE */}
+        {/* Authority Table */}
         <div className="bg-white shadow rounded-xl overflow-hidden">
-          <h3 className="px-6 pt-6 text-lg font-semibold text-gray-800">
-            Authority Users
-          </h3>
-          <p className="px-6 mb-4 text-gray-500 text-sm">
-            List of all registered municipal authorities
-          </p>
+          <table className="w-full border-collapse">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-3 border">Name</th>
+                <th className="p-3 border">Department</th>
+                <th className="p-3 border">Email</th>
+                <th className="p-3 border">Status</th>
+              </tr>
+            </thead>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-gray-100 text-gray-600">
-                <tr>
-                  <th className="p-3 border">Name</th>
-                  <th className="p-3 border">Department</th>
-                  <th className="p-3 border">Email</th>
-                  <th className="p-3 border">Assigned Issues</th>
-                  <th className="p-3 border">Status</th>
-                  <th className="p-3 border">Action</th>
+            <tbody>
+              {authorities.map((auth) => (
+                <tr key={auth.id}>
+                  <td className="p-3 border">{auth.name}</td>
+                  <td className="p-3 border">{auth.department}</td>
+                  <td className="p-3 border">{auth.email}</td>
+                  <td className="p-3 border">{auth.status}</td>
                 </tr>
-              </thead>
+              ))}
 
-              <tbody>
-                {authorities.map((auth) => (
-                  <tr key={auth.id} className="hover:bg-gray-50">
-                    <td className="p-3 border">{auth.name}</td>
-                    <td className="p-3 border">{auth.department}</td>
-                    <td className="p-3 border">{auth.email}</td>
-                    <td className="p-3 border">{auth.assignedIssue}</td>
-
-                    <td className="p-3 border">
-                      <span
-                        className={`px-3 py-1 text-sm rounded-full ${
-                          auth.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {auth.status}
-                      </span>
-                    </td>
-
-                    <td className="p-3 border">
-                      <button
-                        onClick={() => handleEdit(auth.id)}
-                        className="text-blue-600 hover:underline"
-                      >
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-
-                {authorities.length === 0 && (
-                  <tr>
-                    <td colSpan="6" className="p-4 text-center text-gray-500">
-                      No authority added yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              {authorities.length === 0 && (
+                <tr>
+                  <td colSpan="4" className="p-4 text-center text-gray-500">
+                    No authority added yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
 
-        {/* Modal */}
-
+        {/* ✅ Add Authority Modal */}
         {openModal && (
-  <AddAuthorityModel
-    isOpen={openModal}
-    onClose={() => setOpenModal(false)}
-    onSave={(form) => {
-      const selectedDept = categories.find(
-        (c) => String(c.categoryId) === String(form.departmentId)
-      );
+          <AddAuthorityModel
+            isOpen={openModal}
+            categories={categories}
+            onClose={() => setOpenModal(false)}
+            onSave={async (form) => {
+      try {
+        const selectedDept = categories.find(
+          (c) => String(c.categoryId) === String(form.departmentId)
+        );
 
-      const newAuthority = {
-        id: Date.now(),
-        name: form.name,
-        email: form.email,
-        department: selectedDept?.categoryName || "",
-        assignedIssue: "0",
-        status: "Active",
-      };
+        // 🔥 API CALL USING EXISTING AUTH SERVICE
+        await register(
+          form.name,
+          form.email,
+          form.password,
+          "AUTHORITY",
+          form.departmentId,
+          selectedDept?.categoryName || ""
+        );
 
-      setAuthorities((prev) => [...prev, newAuthority]);
-      setOpenModal(false);
+        // ✅ Update UI after success
+        const newAuthority = {
+          id: Date.now(),
+          name: form.name,
+          email: form.email,
+          department: selectedDept?.categoryName || "",
+          assignedIssue: "0",
+          status: "Active",
+        };
+
+        loadAuthorities();
+        setOpenModal(false);
+        toast.success("Authority created successfully");
+      } catch (err) {
+        console.error(err);
+        toast.error(
+          typeof err === "string" ? err : "Failed to create authority"
+        );
+      }
     }}
-  />
-)}
-        
-   {openAddDept && (
-<AddDepartmentModal
-onClose={() => setOpenAddDept(false)}
-onSuccess={() => {
-setOpenAddDept(false);
-loadCategories(); // dropdown refresh
-}}
-/>
-)}
+          />
+        )}
+
+        {/* Add Department Modal */}
+        {openAddDept && (
+          <AddDepartmentModal
+            onClose={() => setOpenAddDept(false)}
+            onSuccess={() => {
+              setOpenAddDept(false);
+              loadCategories(); // ✅ refresh dropdown
+            }}
+          />
+        )}
+      </div>
     </div>
-    </div>  
   );
 };
 

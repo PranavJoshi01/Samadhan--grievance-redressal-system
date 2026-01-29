@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -22,11 +25,23 @@ public class AuthService {
     // Register new user
     public String register(RegisterRequest request) {
 
+        // Determine role
+        Role role = Role.USER; // Default role
+        if (request.getRole() != null) {
+            try {
+                role = Role.valueOf(request.getRole().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Invalid role: " + request.getRole());
+            }
+        }
+
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .role(role)
+                .deptId(request.getDeptId())
+                .deptName(request.getDeptName())
                 .build();
 
         userRepository.save(user);
@@ -43,9 +58,15 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name(),user.getUserId());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name(),user.getUserId(),user.getDeptId(), user.getDeptName());
 
+        return new AuthResponse(token, user.getRole().name(), user.getDeptId(), user.getDeptName());
+    }
 
-        return new AuthResponse(token, user.getRole().name());
+    // Get all authorities
+    public List<User> getAllAuthorities() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRole() == Role.AUTHORITY)
+                .collect(Collectors.toList());
     }
 }

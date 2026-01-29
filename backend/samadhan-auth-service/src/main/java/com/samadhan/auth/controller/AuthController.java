@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import com.samadhan.auth.dto.AuthResponse;
 import com.samadhan.auth.dto.LoginRequest;
 import com.samadhan.auth.dto.RegisterRequest;
+import com.samadhan.auth.entity.User;
 import com.samadhan.auth.service.AuthService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -26,5 +29,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @GetMapping("/authorities")
+    public ResponseEntity<List<User>> getAllAuthorities() {
+        return ResponseEntity.ok(authService.getAllAuthorities());
     }
 }

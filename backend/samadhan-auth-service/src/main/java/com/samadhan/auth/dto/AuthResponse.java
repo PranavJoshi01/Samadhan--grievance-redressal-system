@@ -8,4 +8,6 @@ import lombok.Data;
 public class AuthResponse {
     private String token;
     private String role;
+    private Long deptId;
+    private String deptName;
 }
