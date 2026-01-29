@@ -1,8 +1,31 @@
+/**
+ * Assign grievance to authority/department
+ * @param {number} grievanceId - Grievance ID
+ * @param {number} authorityId - Department/Authority ID
+ * @param {string} status - (optional) New status
+ * @param {string} message - (optional) Message
+ * @returns {Promise<Object>} Response from server
+ */
+export const assignGrievance = async (grievanceId, authorityId) => {
+  try {
+    const payload = { authorityId };
+    console.log('AssignGrievance payload:', payload);
+    const response = await axiosInstance.put(
+      API_ENDPOINTS.GRIEVANCE.ASSIGN(grievanceId),
+      payload,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error assigning grievance:', error);
+    throw error;
+  }
+};
 import axios from "axios";
 import { API_BASE_URL, API_ENDPOINTS } from "../constants/apiConfig";
 
 const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: "http://localhost:8080",
   timeout: 10000,
 });
 axiosInstance.interceptors.request.use(

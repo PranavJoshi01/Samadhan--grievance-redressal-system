@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
     UPDATE: (id) => `/grievance/${id}`,
     DELETE: (id) => `/grievance/${id}`,
     STATUS_CHANGE: '/grievance/statusChange',
+    ASSIGN: (id) => `/grievance/${id}/assign`,
   },
   CATEGORY: {
     GET_ALL: "/category",

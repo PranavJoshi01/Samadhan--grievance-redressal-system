@@ -329,8 +329,14 @@ public class GrievanceServiceImpl implements GrievanceService {
     new RuntimeException("Grievance not found"));
 
 
-    grievance.setAssignedAuthorityId(authorityId);
-    grievance.setStatus(status);
+        if (authorityId != null) {
+            GrievanceCategory category = categoryRepository.findById(authorityId)
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            grievance.setCategory(category);
+        }
+        if (status != null) {
+            grievance.setStatus(status);
+        }
 
 
     // optional: future use
