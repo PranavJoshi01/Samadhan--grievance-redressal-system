@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { API_BASE_URL } from "../../constants/apiConfig";
+import { API_NOTIFICATION_BASE_URL } from "../../constants/apiConfig";
+
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState([]);
@@ -23,7 +24,8 @@ export default function Notifications() {
         return;
       }
 
-      const res = await fetch(`${API_BASE_URL}/notifications`, {
+     const res = await fetch(`${API_NOTIFICATION_BASE_URL}/notifications`, {
+
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -53,7 +55,8 @@ export default function Notifications() {
         return;
       }
 
-      const res = await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
+      const res = await fetch(`${API_NOTIFICATION_BASE_URL}/notifications`, {
+
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

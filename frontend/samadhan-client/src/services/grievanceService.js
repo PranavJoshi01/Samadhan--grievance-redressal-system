@@ -65,47 +65,63 @@ export const fetchCategories = async () => {
  * @param {File[]} grievanceData.media - Media files array
  * @returns {Promise<Object>} Response from server
  */
+/**
+ * Submit a new grievance with media files
+ */
 export const submitGrievance = async (grievanceData) => {
   try {
-    const formData = new FormData();
-    const grievanceDto = {
-    title: grievanceData.title,
-    description: grievanceData.description,
-    deptId: grievanceData.deptId,
-    address: grievanceData.address
-  };
+    const token = localStorage.getItem("token"); // 🔥 JWT TOKEN
 
-  // 🔹 Append DTO as JSON blob (IMPORTANT)
-  formData.append(
-    "data",
-    new Blob([JSON.stringify(grievanceDto)], {
-      type: "application/json",
-    })
-  );
-    
+    const formData = new FormData();
+
+    // DTO object (NO email, NO userId)
+    const grievanceDto = {
+  title: grievanceData.title,
+  description: grievanceData.description,
+  deptId: grievanceData.deptId,
+  address: grievanceData.address,
+  userEmail: grievanceData.userEmail   
+};
+
+
+    // 🔥 IMPORTANT — backend expects part name "grievance"
+    formData.append(
+      "grievance",
+      new Blob([JSON.stringify(grievanceDto)], {
+        type: "application/json",
+      })
+    );
+
     // Append media files
     if (grievanceData.media && grievanceData.media.length > 0) {
       grievanceData.media.forEach((file) => {
-        formData.append('media', file);
+        formData.append("media", file);
       });
     }
+
+    console.log("Submitting grievance DTO:", grievanceDto);
+console.log("Media files:", grievanceData.media);
+console.log("Token:", token);
 
     const response = await axiosInstance.post(
       API_ENDPOINTS.GRIEVANCE.CREATE,
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`, // 🔥 SEND TOKEN
+          "Content-Type": "multipart/form-data",
         },
       }
     );
 
     return response.data;
+
   } catch (error) {
-    console.error('Error submitting grievance:', error);
+    console.error("Error submitting grievance:", error);
     throw error;
   }
 };
+
 
 /**
  * Get all grievances with pagination

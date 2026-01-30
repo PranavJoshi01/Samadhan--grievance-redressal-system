@@ -19,6 +19,6 @@ public class GrievanceDto {
     private int deptId;
     private String address;
     private GrievanceMediaDto media;
-
+    private String userEmail;
 
 }

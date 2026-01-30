@@ -11,7 +11,8 @@ import com.samadhan.grievance_core_service.dto.GrievanceDto;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface GrievanceService {
-    void createGrievance(GrievanceDto grievanceDto, MultipartFile[] media, Long userId);
+	void createGrievance(GrievanceDto grievanceDto, MultipartFile[] mediaFile, String token);
+
     
     Page<Grievances> getAllGrievancesByRole(
             int page,

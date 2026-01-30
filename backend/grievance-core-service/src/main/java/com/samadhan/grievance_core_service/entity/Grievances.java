@@ -27,6 +27,8 @@ public class Grievances {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "grievance_id")
     private Long grievanceId;
+    
+ 
 
     @Column(nullable = false, length = 200)
     private String title;
@@ -40,6 +42,9 @@ public class Grievances {
 
     @Column(name = "address", length = 255)
     private String address;
+
+    @Column(name = "created_by_user_email")
+    private String createdByUserEmail;
 
 
     @Column(name = "created_by_user_id", nullable = false)

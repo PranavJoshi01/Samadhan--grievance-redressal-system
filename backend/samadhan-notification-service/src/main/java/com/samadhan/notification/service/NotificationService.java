@@ -15,12 +15,13 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    // CREATE NOTIFICATION
+    // ✅ CREATE NOTIFICATION USING REAL USER EMAIL
     public NotificationResponseDTO createNotification(NotificationRequestDTO request) {
 
         Notification notification = Notification.builder()
-                .userEmail(request.getUserEmail())
+                .userEmail(request.getUserEmail())   // ✅ USE EMAIL FROM REQUEST
                 .message(request.getMessage())
+                .read(false)
                 .build();
 
         Notification saved = notificationRepository.save(notification);
@@ -34,11 +35,11 @@ public class NotificationService {
                 .build();
     }
 
-    // GET ALL NOTIFICATIONS FOR USER (LATEST FIRST)
+    // ✅ GET ALL NOTIFICATIONS FOR LOGGED-IN USER
     public List<NotificationResponseDTO> getUserNotifications(String email) {
 
         return notificationRepository
-                .findByUserEmailOrderByCreatedAtDesc(email) // ✅ sorted
+                .findByUserEmailOrderByCreatedAtDesc(email)
                 .stream()
                 .map(n -> NotificationResponseDTO.builder()
                         .id(n.getId())
@@ -50,7 +51,7 @@ public class NotificationService {
                 .toList();
     }
 
-    // MARK NOTIFICATION AS READ
+    // ✅ MARK NOTIFICATION AS READ
     public void markAsRead(Long id) {
 
         Notification notification = notificationRepository.findById(id)

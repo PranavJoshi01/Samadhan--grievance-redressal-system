@@ -1,7 +1,5 @@
 package com.samadhan.grievance_core_service.security;
 
-
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -22,13 +20,17 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    // 🔹 Extract email (subject)
-    public String extractUsername(String token) {
+    // ✅ EXTRACT EMAIL (stored as subject in JWT)
+    public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    public Long extractUserId(String token){return extractAllClaims(token).get("userId",Long.class);}
-    // 🔹 Extract role (optional, for role-based access later)
+    // ✅ EXTRACT USER ID
+    public Long extractUserId(String token) {
+        return extractAllClaims(token).get("userId", Long.class);
+    }
+
+    // ✅ EXTRACT ROLE
     public String extractRole(String token) {
         return extractAllClaims(token).get("role", String.class);
     }
@@ -37,7 +39,7 @@ public class JwtUtil {
         return extractAllClaims(token).get("deptId", Long.class);
     }
 
-    // 🔹 Validate token (basic validation)
+    // 🔹 Validate token
     public boolean isTokenValid(String token) {
         try {
             return !isTokenExpired(token);
@@ -45,6 +47,7 @@ public class JwtUtil {
             return false;
         }
     }
+
 
     // 🔹 Check expiration
     private boolean isTokenExpired(String token) {

@@ -2,7 +2,8 @@
 
 This is used until backend notification service is fully running. */
 
-import { API_BASE_URL } from "../constants/apiConfig";
+import { API_NOTIFICATION_BASE_URL } from "../constants/apiConfig";
+
 
 /* MOCK DATA
 export const getNotificationsMock = async () => {
@@ -27,7 +28,8 @@ export const getNotificationsMock = async () => {
 //REAL API
 
 export const getNotifications = async (token) => {
-  const response = await fetch(`${API_BASE_URL}/notifications`, {
+ const response = await fetch(`${API_NOTIFICATION_BASE_URL}/notifications`, 
+ {
     headers: {
       Authorization: `Bearer ${token}`,
     },
