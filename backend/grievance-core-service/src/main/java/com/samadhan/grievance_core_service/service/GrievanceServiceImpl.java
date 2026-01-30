@@ -256,3 +256,4 @@ public class GrievanceServiceImpl implements GrievanceService {
 
         grievanceRepository.save(grievance);
     }
+}

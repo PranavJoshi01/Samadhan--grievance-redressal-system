@@ -103,16 +103,16 @@ export const submitGrievance = async (grievanceData) => {
 console.log("Media files:", grievanceData.media);
 console.log("Token:", token);
 
-    const response = await axiosInstance.post(
-      API_ENDPOINTS.GRIEVANCE.CREATE,
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`, // 🔥 SEND TOKEN
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+   const response = await axiosInstance.post(
+  API_ENDPOINTS.GRIEVANCE.CREATE,
+  formData,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
 
     return response.data;
 
