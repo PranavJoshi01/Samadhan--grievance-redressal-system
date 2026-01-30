@@ -42,7 +42,7 @@ const ManageAuthority = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <AdminNavbar />
+      {/* <AdminNavbar /> */}
 
       <div className="p-8">
         {/* Header */}
