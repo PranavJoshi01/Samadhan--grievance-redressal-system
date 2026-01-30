@@ -25,7 +25,6 @@ services:
       DB_URL: jdbc:mysql://mysql:3306/grievance_db   # ✅ FIXED
       DB_USER: root
       DB_PASS: root
-      JWT_SECRET: SamadhanSecretKey
     restart: always
 
 volumes:
