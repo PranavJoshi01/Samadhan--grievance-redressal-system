@@ -47,6 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         // 🔹 Set authentication
+     // 🔹 Set authentication
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if (jwtUtil.isTokenValid(token)) {
 
@@ -54,7 +55,9 @@ public class JwtFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(
                                 email,
                                 null,
-                                Collections.singletonList(new SimpleGrantedAuthority(role))
+                                Collections.singletonList(
+                                        new SimpleGrantedAuthority("ROLE_" + role)  // ⭐ FIX HERE
+                                )
                         );
 
                 authentication.setDetails(
@@ -64,6 +67,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
+
 
 
         filterChain.doFilter(request, response);

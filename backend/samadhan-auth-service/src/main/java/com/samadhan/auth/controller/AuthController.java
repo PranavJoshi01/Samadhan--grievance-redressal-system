@@ -26,6 +26,13 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(request));
     }
 
+
+    @PostMapping("/create-authority")
+    public ResponseEntity<String> createAuthority(@RequestBody RegisterRequest request) {
+        request.setRole("AUTHORITY"); // force role
+        return ResponseEntity.ok(authService.register(request));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));

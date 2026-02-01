@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { Link, useNavigate } from "react-router-dom";
+
 import {
   FaUser,
   FaEnvelope,
@@ -8,7 +9,8 @@ import {
   FaLock,
   FaArrowRight,
 } from "react-icons/fa";
-import { API_BASE_URL,API_AUTH_BASE_URL, API_ENDPOINTS } from "../../constants/apiConfig";
+import { registerUser } from "../../services/authService";
+
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -48,21 +50,8 @@ const Register = () => {
 
       //  real backend register
 
-      const response = await fetch(API_AUTH_BASE_URL + API_ENDPOINTS.AUTH.REGISTER, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: firstName,
-          email,
-          password,
-        }),
-      });
+      await registerUser(firstName, email, password);
 
-      if (!response.ok) {
-        throw new Error("Registration failed");
-      }
 
       toast.success("Registration successful");
       navigate("/login");

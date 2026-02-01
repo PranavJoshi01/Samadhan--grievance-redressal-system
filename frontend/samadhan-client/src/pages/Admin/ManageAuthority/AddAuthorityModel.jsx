@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { createAuthority } from "../../../services/authService"; // adjust path if needed
 
-const AddAuthorityModel = ({ isOpen, onClose, onSave, categories = [] }) => {
+const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
   const [form, setForm] = useState({
     name: "",
     departmentId: "",
@@ -10,19 +11,41 @@ const AddAuthorityModel = ({ isOpen, onClose, onSave, categories = [] }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.name || !form.departmentId || !form.email || !form.password) {
       alert("All fields required");
       return;
     }
 
-    onSave(form);
-    setForm({
-      name: "",
-      departmentId: "",
-      email: "",
-      password: "",
-    });
+    try {
+      // Find department name using selected ID
+      const selectedDept = categories.find(
+        (cat) => String(cat.categoryId) === String(form.departmentId)
+      );
+
+      await createAuthority(
+        form.name,
+        form.email,
+        form.password,
+        form.departmentId,
+        selectedDept?.categoryName || ""
+      );
+
+      alert("✅ Authority created successfully");
+
+      // Reset form
+      setForm({
+        name: "",
+        departmentId: "",
+        email: "",
+        password: "",
+      });
+
+      onClose(); // close modal after success
+    } catch (error) {
+      console.error(error);
+      alert(error || "Failed to create authority");
+    }
   };
 
   return (
@@ -35,18 +58,14 @@ const AddAuthorityModel = ({ isOpen, onClose, onSave, categories = [] }) => {
           className="w-full border p-2 mb-3"
           placeholder="Authority Name"
           value={form.name}
-          onChange={(e) =>
-            setForm({ ...form, name: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
 
-        {/* ✅ Department Dropdown */}
+        {/* Department Dropdown */}
         <select
           className="w-full border p-2 mb-3"
           value={form.departmentId}
-          onChange={(e) =>
-            setForm({ ...form, departmentId: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
         >
           <option value="">
             {categories.length === 0
@@ -66,9 +85,7 @@ const AddAuthorityModel = ({ isOpen, onClose, onSave, categories = [] }) => {
           className="w-full border p-2 mb-3"
           placeholder="Email"
           value={form.email}
-          onChange={(e) =>
-            setForm({ ...form, email: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
         {/* Password */}
@@ -77,9 +94,7 @@ const AddAuthorityModel = ({ isOpen, onClose, onSave, categories = [] }) => {
           className="w-full border p-2 mb-4"
           placeholder="Temporary Password"
           value={form.password}
-          onChange={(e) =>
-            setForm({ ...form, password: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
         {/* Buttons */}

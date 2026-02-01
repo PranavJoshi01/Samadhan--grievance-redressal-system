@@ -22,11 +22,11 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    // Register new user
+    // Register new user (USER or AUTHORITY)
     public String register(RegisterRequest request) {
 
         // Determine role
-        Role role = Role.USER; // Default role
+        Role role = Role.USER;
         if (request.getRole() != null) {
             try {
                 role = Role.valueOf(request.getRole().toUpperCase());
@@ -42,6 +42,7 @@ public class AuthService {
                 .role(role)
                 .deptId(request.getDeptId())
                 .deptName(request.getDeptName())
+                .phoneNumber("0000000000")
                 .build();
 
         userRepository.save(user);
@@ -58,7 +59,13 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name(),user.getUserId(),user.getDeptId(), user.getDeptName());
+        String token = jwtUtil.generateToken(
+                user.getEmail(),
+                user.getRole().name(),
+                user.getUserId(),
+                user.getDeptId(),
+                user.getDeptName()
+        );
 
         return new AuthResponse(token, user.getRole().name(), user.getDeptId(), user.getDeptName());
     }

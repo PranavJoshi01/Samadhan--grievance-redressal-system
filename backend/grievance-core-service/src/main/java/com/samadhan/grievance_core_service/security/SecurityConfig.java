@@ -27,32 +27,43 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.disable())
 
-                        // ✅ GET → USER + ADMIN
-                        .requestMatchers(HttpMethod.GET, "/category/**").authenticated()
+            .authorizeHttpRequests(auth -> auth
 
-                        // 🔐 POST / PUT / DELETE → ONLY ADMIN
-                        // 🔐 ONLY ADMIN
-                        .requestMatchers(HttpMethod.POST, "/category/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT,  "/category/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE,"/category/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/grievance/*/assign").hasRole("ADMIN")
+                // PUBLIC (if any)
+                .requestMatchers(HttpMethod.GET, "/category/**").permitAll()
 
-                        // baaki sab secure
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                //  LOGGED-IN USERS (User + Admin + Authority)
+                .requestMatchers(HttpMethod.GET, "/grievance/**").authenticated()
 
-        // 👇 JWT filter register
+                //  ADMIN ONLY — MASTER DATA
+                .requestMatchers("/category/**").hasRole("ADMIN")
+                .requestMatchers("/department/**").hasRole("ADMIN")
+                .requestMatchers("/authority/**").hasRole("ADMIN")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                //  ADMIN ONLY — ASSIGN / STATUS UPDATE
+                .requestMatchers(HttpMethod.PUT, "/grievance/*/assign").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/grievance/*/status").hasRole("ADMIN")
+
+                // AUTHORITY ROLE — WORK ON ASSIGNED GRIEVANCES
+                .requestMatchers("/authority/grievances/**").hasRole("AUTHORITY")
+
+                //  EVERYTHING ELSE
+                .anyRequest().authenticated()
+            )
+
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );
+
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
