@@ -89,11 +89,11 @@
 </dependency>
 
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.samadhan</groupId>
 			<artifactId>samadhan-auth-service</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 
 

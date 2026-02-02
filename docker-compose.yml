@@ -1,0 +1,88 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: samadhan-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/docker/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - samadhan-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build: ./backend/samadhan-auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/samadhan_auth_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: samadhan
+      SPRING_DATASOURCE_PASSWORD: samadhan123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - samadhan-net
+
+  grievance-service:
+    build: ./backend/grievance-core-service
+    container_name: grievance-service
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/grievance_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: samadhan
+      SPRING_DATASOURCE_PASSWORD: samadhan123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - samadhan-net
+
+  notification-service:
+    build: ./backend/samadhan-notification-service
+    container_name: notification-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/samadhan_notification_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: samadhan
+      SPRING_DATASOURCE_PASSWORD: samadhan123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - samadhan-net
+
+  frontend:
+    build: ./frontend/samadhan-client
+    container_name: samadhan-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - auth-service
+      - grievance-service
+    networks:
+      - samadhan-net
+
+volumes:
+  mysql_data:
+
+networks:
+  samadhan-net:
+    driver: bridge
