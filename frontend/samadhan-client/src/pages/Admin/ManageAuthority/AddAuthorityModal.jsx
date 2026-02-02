@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { createAuthority } from "../../../services/authService"; // adjust path if needed
+import { createAuthority } from "../../../services/authService";
+import { toast } from "react-toastify";
 
-const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
+const AddAuthorityModal = ({ isOpen, onClose, categories = [], onSuccess }) => {
   const [form, setForm] = useState({
     name: "",
     departmentId: "",
@@ -13,25 +14,31 @@ const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
 
   const handleSubmit = async () => {
     if (!form.name || !form.departmentId || !form.email || !form.password) {
-      alert("All fields required");
+      toast.error("All fields are required");
       return;
     }
 
     try {
-      // Find department name using selected ID
+      // Find selected department
       const selectedDept = categories.find(
         (cat) => String(cat.categoryId) === String(form.departmentId)
       );
 
+      if (!selectedDept) {
+        toast.error("Invalid department selected");
+        return;
+      }
+
+      // Send correct values to backend
       await createAuthority(
         form.name,
         form.email,
         form.password,
-        form.departmentId,
-        selectedDept?.categoryName || ""
+        Number(selectedDept.categoryId),
+        selectedDept.categoryName
       );
 
-      alert("✅ Authority created successfully");
+      toast.success("Authority created successfully 🎉");
 
       // Reset form
       setForm({
@@ -41,10 +48,13 @@ const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
         password: "",
       });
 
-      onClose(); // close modal after success
+      // Refresh list if parent provided handler
+      if (onSuccess) onSuccess();
+
+      onClose();
     } catch (error) {
-      console.error(error);
-      alert(error || "Failed to create authority");
+      console.error("Create authority failed:", error);
+      toast.error(typeof error === "string" ? error : "Failed to create authority");
     }
   };
 
@@ -55,7 +65,7 @@ const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
 
         {/* Authority Name */}
         <input
-          className="w-full border p-2 mb-3"
+          className="w-full border p-2 mb-3 rounded"
           placeholder="Authority Name"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -63,7 +73,7 @@ const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
 
         {/* Department Dropdown */}
         <select
-          className="w-full border p-2 mb-3"
+          className="w-full border p-2 mb-3 rounded"
           value={form.departmentId}
           onChange={(e) => setForm({ ...form, departmentId: e.target.value })}
         >
@@ -82,8 +92,9 @@ const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
 
         {/* Email */}
         <input
-          className="w-full border p-2 mb-3"
+          className="w-full border p-2 mb-3 rounded"
           placeholder="Email"
+          type="email"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
@@ -91,7 +102,7 @@ const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
         {/* Password */}
         <input
           type="password"
-          className="w-full border p-2 mb-4"
+          className="w-full border p-2 mb-4 rounded"
           placeholder="Temporary Password"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -100,13 +111,13 @@ const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
         {/* Buttons */}
         <div className="flex justify-end gap-3">
           <button
-            className="border px-4 py-2 rounded"
+            className="border px-4 py-2 rounded hover:bg-gray-100"
             onClick={onClose}
           >
             Cancel
           </button>
           <button
-            className="bg-blue-600 text-white px-4 py-2 rounded"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             onClick={handleSubmit}
           >
             Create Authority
@@ -117,4 +128,4 @@ const AddAuthorityModel = ({ isOpen, onClose, categories = [] }) => {
   );
 };
 
-export default AddAuthorityModel;
+export default AddAuthorityModal;

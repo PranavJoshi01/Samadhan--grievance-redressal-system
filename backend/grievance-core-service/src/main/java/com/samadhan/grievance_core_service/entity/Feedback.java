@@ -24,14 +24,18 @@ public class Feedback {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    @Column(nullable = false)
     private String userEmail;
 
+    @Column(nullable = false)
     private Long deptId;
 
+    @Column(nullable = false)
     private Integer rating;
 
     @Column(length = 1000)
     private String message;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 }

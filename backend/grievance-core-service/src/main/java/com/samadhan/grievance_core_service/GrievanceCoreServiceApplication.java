@@ -1,11 +1,14 @@
 package com.samadhan.grievance_core_service;
 
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
+@EnableFeignClients
+
 public class GrievanceCoreServiceApplication {
 
 	public static void main(String[] args) {

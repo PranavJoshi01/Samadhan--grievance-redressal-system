@@ -26,9 +26,13 @@ public class GrievanceResponseDto {
     private LocalDateTime updatedAt;
     private Long createdByUserId;
     private Long assignedAuthorityId;
-    
+
     private CategoryDto category;
     private List<String> mediaUrls;  // Only URLs, not full media objects
+
+    //  NEW FIELDS FROM FEEDBACK SERVICE
+    private Integer feedbackRating;
+    private String feedbackMessage;
 
     @Getter
     @Setter

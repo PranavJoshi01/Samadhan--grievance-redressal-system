@@ -1,109 +1,124 @@
-import { useState } from "react";
-import { updateIssue } from "../Admindashboard/components/AdminData";
+import { useEffect, useState } from "react";
+import ManageIssueModal from "./ManageIssueModal";
+import { getAllAdminGrievances } from "../../../services/grievanceService";
 
-export default function ManageIssueModal({ issue, close }) {
-  const [status, setStatus] = useState(issue.status);
-  const [dept, setDept] = useState(issue.department);
-  const [note, setNote] = useState("");
+export default function ManageIssues() {
+    console.log("✅ ManageIssues component is rendering");
+  const [issues, setIssues] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const saveNow = () => {
-    const updated = {
-      ...issue,
-      status,
-      department: dept,
-      note,
-    };
+  useEffect(() => {
+    console.log("ManageIssues component mounted");
+    fetchIssues();
+  }, []);
 
-    updateIssue(updated);
-    close();
+  const fetchIssues = async () => {
+    try {
+      setLoading(true);
+      console.log("Calling admin grievances API...");
+      const data = await getAllAdminGrievances();
+      console.log("Fetched data:", data);
+      setIssues(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching grievances:", err);
+      setError("Failed to load grievances");
+      setIssues([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
-
-      <div className="bg-white p-8 rounded-2xl w-[550px] overflow-y-auto max-h-[90vh]">
-
-        <h2 className="text-2xl font-bold mb-2">Manage Issue</h2>
-        <p className="text-gray-500 mb-4">Update issue status and assignment</p>
-
-        <h3 className="text-xl font-semibold">{issue.title}</h3>
-        <p className="text-gray-600 mb-4">{issue.description}</p>
-
-        <img
-          src="https://picsum.photos/500/250"
-          className="rounded-xl mb-4"
-        />
-
-        {/* DETAILS */}
-        <div className="space-y-3 text-gray-700">
-
-          <p>📍 {issue.location}</p>
-          <p>👤 {issue.reporter}</p>
-          <p>📅 {issue.date}</p>
-          <p className="bg-gray-200 inline-block px-3 py-1 rounded-lg">
-            {issue.category}
-          </p>
-        </div>
-
-        {/* FORM */}
-        <div className="mt-6 space-y-4">
-
-          <div>
-            <label className="font-semibold">Assign to Authority</label>
-            <select
-              value={dept}
-              onChange={(e) => setDept(e.target.value)}
-              className="w-full border p-2 rounded mt-1"
-            >
-              <option>Road Department</option>
-              <option>Sanitation Department</option>
-              <option>Maintenance Department</option>
-              <option>Electricity Department</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="font-semibold">Update Status</label>
-            <select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="w-full border p-2 rounded mt-1"
-            >
-              <option>Pending</option>
-              <option>In Progress</option>
-              <option>Resolved</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="font-semibold">Notification Message (Optional)</label>
-            <textarea
-              rows="3"
-              className="w-full border p-2 rounded mt-1"
-              placeholder="Add a message to notify the authority…"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            ></textarea>
-          </div>
-        </div>
-
-        {/* BUTTONS */}
-        <div className="flex justify-end gap-4 mt-6">
-          <button
-            className="px-5 py-2 border rounded-lg"
-            onClick={close}
-          >
-            Cancel
+    <div className="min-h-screen bg-gray-100">
+      <div className="p-10">
+        <div className="flex items-center gap-4 mb-6">
+          <button onClick={() => window.history.back()} className="text-lg">
+            ← Back
           </button>
-          <button
-            className="px-5 py-2 bg-black text-white rounded-lg"
-            onClick={saveNow}
-          >
-            Save & Notify Authority
-          </button>
+          <h1 className="text-3xl font-bold">Manage Issues</h1>
         </div>
 
+        <p className="text-gray-500 mb-6">
+          Assign issues to authorities and monitor feedback
+        </p>
+
+        {loading && <p className="text-gray-500">Loading grievances...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+
+        {!loading && issues.length === 0 && !error && (
+          <p className="text-gray-500">No grievances found.</p>
+        )}
+
+        <div className="space-y-6">
+          {issues.map(issue => (
+            <div
+              key={issue.grievanceId}
+              className="bg-white shadow-md rounded-xl p-6 flex items-center justify-between"
+            >
+              <div className="flex gap-5">
+                <img
+                  src="https://picsum.photos/160/120"
+                  className="w-40 h-28 rounded-lg object-cover"
+                  alt="Grievance"
+                />
+
+                <div>
+                  <h2 className="text-xl font-semibold">{issue.title}</h2>
+
+                  <div className="flex gap-3 mt-3">
+                    <span className="bg-gray-200 px-3 py-1 rounded-lg text-sm">
+                      {issue.status}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-6 mt-4 text-gray-600 text-sm">
+                    <span>🆔 {issue.grievanceId}</span>
+                    <span>
+                      📅{" "}
+                      {issue.createdAt
+                        ? new Date(issue.createdAt).toLocaleDateString()
+                        : "—"}
+                    </span>
+                  </div>
+
+                  {/* ⭐ Feedback Section */}
+                  <div className="mt-3 text-sm">
+                    <p>
+                      <strong>Rating:</strong>{" "}
+                      {issue.feedbackRating !== null &&
+                      issue.feedbackRating !== undefined
+                        ? `⭐ ${issue.feedbackRating}/5`
+                        : "—"}
+                    </p>
+                    <p>
+                      <strong>Feedback:</strong>{" "}
+                      {issue.feedbackMessage && issue.feedbackMessage.trim() !== ""
+                        ? issue.feedbackMessage
+                        : "No feedback yet"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setSelected(issue)}
+                className="text-xl hover:text-blue-600"
+              >
+                ✏
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {selected && (
+          <ManageIssueModal
+            issue={selected}
+            close={() => setSelected(null)}
+          />
+        )}
       </div>
     </div>
   );
-} 
+}

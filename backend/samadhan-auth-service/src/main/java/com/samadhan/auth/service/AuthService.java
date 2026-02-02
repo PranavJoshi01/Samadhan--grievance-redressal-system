@@ -22,16 +22,29 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    // Register new user (USER or AUTHORITY)
+    // ================= REGISTER USER / AUTHORITY =================
     public String register(RegisterRequest request) {
 
-        // Determine role
-        Role role = Role.USER;
-        if (request.getRole() != null) {
-            try {
-                role = Role.valueOf(request.getRole().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new RuntimeException("Invalid role: " + request.getRole());
+        if (request.getName() == null || request.getEmail() == null || request.getPassword() == null) {
+            throw new RuntimeException("Name, Email and Password are required");
+        }
+
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        Role role;
+        try {
+            role = request.getRole() != null
+                    ? Role.valueOf(request.getRole().toUpperCase())
+                    : Role.USER;
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid role provided");
+        }
+
+        if (role == Role.AUTHORITY) {
+            if (request.getDeptId() == null || request.getDeptName() == null || request.getDeptName().isBlank()) {
+                throw new RuntimeException("Department is required for Authority");
             }
         }
 
@@ -40,16 +53,24 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(role)
-                .deptId(request.getDeptId())
-                .deptName(request.getDeptName())
-                .phoneNumber("0000000000")
+                .deptId(role == Role.AUTHORITY ? request.getDeptId() : null)
+                .deptName(role == Role.AUTHORITY ? request.getDeptName() : null)
+
+               
+                .phoneNumber(null)
+
+
                 .build();
 
         userRepository.save(user);
-        return "User registered successfully";
+
+        return role == Role.AUTHORITY
+                ? "Authority created successfully"
+                : "User registered successfully";
     }
 
-    // Login user
+
+    // ================= LOGIN =================
     public AuthResponse login(LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
@@ -70,7 +91,7 @@ public class AuthService {
         return new AuthResponse(token, user.getRole().name(), user.getDeptId(), user.getDeptName());
     }
 
-    // Get all authorities
+    // ================= GET ALL AUTHORITIES =================
     public List<User> getAllAuthorities() {
         return userRepository.findAll().stream()
                 .filter(user -> user.getRole() == Role.AUTHORITY)

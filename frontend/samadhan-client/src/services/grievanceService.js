@@ -259,3 +259,33 @@ export const addDepartment = async (data) => {
   return response.data;
 
 };
+/**
+ * ⭐ ADMIN — Get all grievances (with feedback)
+ * Used in Admin Manage Issues page
+ */
+export const getAllAdminGrievances = async () => {
+  try {
+    const response = await axiosInstance.get(
+      API_ENDPOINTS.GRIEVANCE.ADMIN_ALL // make sure this exists in apiConfig
+    );
+
+    console.log("Admin grievances response:", response.data);
+
+    // Ensure feedback fields always exist
+    return response.data.map(g => ({
+      ...g,
+      feedbackRating:
+        g.feedbackRating !== undefined && g.feedbackRating !== null
+          ? g.feedbackRating
+          : null,
+      feedbackMessage:
+        g.feedbackMessage !== undefined && g.feedbackMessage !== null
+          ? g.feedbackMessage
+          : null,
+    }));
+
+  } catch (error) {
+    console.error("Error fetching admin grievances:", error);
+    return [];
+  }
+};

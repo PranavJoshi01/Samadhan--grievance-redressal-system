@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,15 +20,23 @@ public class FeedbackController {
     private final JwtUtil jwtUtil;
 
     @PostMapping
-    public String submitFeedback(@Valid @RequestBody FeedbackRequestDTO dto,
-                                 HttpServletRequest request) {
+    public ResponseEntity<String> submitFeedback(@Valid @RequestBody FeedbackRequestDTO dto,
+                                                 HttpServletRequest request) {
 
-        String token = request.getHeader("Authorization").substring(7);
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Missing or invalid Authorization header");
+        }
+
+        String token = authHeader.substring(7);
 
         Long userId = jwtUtil.extractUserId(token);
         String email = jwtUtil.extractEmail(token);
         Long deptId = jwtUtil.extractDeptId(token);
 
-        return feedbackService.submitFeedback(dto, userId, email, deptId);
+        String response = feedbackService.submitFeedback(dto, userId, email, deptId);
+
+        return ResponseEntity.ok(response);
     }
 }

@@ -2,12 +2,12 @@ import axios from "axios";
 
 const API_BASE_URL = "http://localhost:8081/auth";
 
-// ✅ Axios instance
+// Axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// ✅ Automatically attach JWT token
+// Attach JWT automatically
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -16,39 +16,48 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Helper to extract clean message
+const getErrorMessage = (error) => {
+  if (error.response?.data) {
+    if (typeof error.response.data === "string") return error.response.data;
+    if (error.response.data.message) return error.response.data.message;
+    return JSON.stringify(error.response.data);
+  }
+  return error.message || "Something went wrong";
+};
 
-// ================= USER REGISTER (PUBLIC) =================
+// ================= USER REGISTER =================
 export const registerUser = async (name, email, password) => {
   try {
     const response = await api.post("/register", {
       name,
       email,
       password,
-      role: "USER", // Backend will treat this as normal user
+      role: "USER",
     });
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throw getErrorMessage(error);
   }
 };
 
-
-// ================= ADMIN CREATES AUTHORITY (PROTECTED) =================
+// ================= CREATE AUTHORITY =================
 export const createAuthority = async (name, email, password, deptId, deptName) => {
   try {
     const response = await api.post("/create-authority", {
       name,
       email,
       password,
-      deptId,
+      role: "AUTHORITY",
+      deptId: Number(deptId),
       deptName,
     });
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    console.error("Create authority error:", error.response?.data);
+    throw getErrorMessage(error);
   }
 };
-
 
 // ================= LOGIN =================
 export const login = async (email, password) => {
@@ -60,23 +69,21 @@ export const login = async (email, password) => {
 
     const data = response.data;
 
-    // ✅ Save token + role for future requests
     localStorage.setItem("token", data.token);
     localStorage.setItem("role", data.role);
 
     return data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throw getErrorMessage(error);
   }
 };
 
-
-// ================= GET ALL AUTHORITIES (ADMIN ONLY) =================
+// ================= GET AUTHORITIES =================
 export const getAllAuthorities = async () => {
   try {
     const response = await api.get("/authorities");
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throw getErrorMessage(error);
   }
 };

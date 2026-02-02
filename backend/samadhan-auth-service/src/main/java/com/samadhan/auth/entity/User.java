@@ -17,16 +17,19 @@ public class User {
 
     private String name;
 
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    private String password;
-    
     @Column(nullable = false)
+    private String password;
+
+ 
+    @Column(nullable = true)
     private String phoneNumber;
 
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     private Long deptId;

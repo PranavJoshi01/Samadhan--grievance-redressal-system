@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import AdminNavbar from "../../../components/Admin/AdminNavbar";
-import AddAuthorityModel from "./AddAuthorityModel";
+import AddAuthorityModal from "./AddAuthorityModal"; // ✅ fixed name
 import AddDepartmentModal from "./AddDepartmentModal";
 import { fetchCategories } from "../../../services/grievanceService";
-import { toast } from "react-toastify";
 import { getAllAuthorities } from "../../../services/authService";
 
 const ManageAuthority = () => {
@@ -12,21 +10,23 @@ const ManageAuthority = () => {
   const [categories, setCategories] = useState([]);
   const [authorities, setAuthorities] = useState([]);
 
-  const loadCategories = () => {
-    fetchCategories()
-      .then((res) => setCategories(res))
-      .catch(() => setCategories([]));
+  const loadCategories = async () => {
+    try {
+      const res = await fetchCategories();
+      setCategories(Array.isArray(res) ? res : []);
+    } catch {
+      setCategories([]);
+    }
   };
 
-  const loadAuthorities = () => {
-    getAllAuthorities()
-      .then((res) => {
-        setAuthorities(Array.isArray(res) ? res : []);
-      })
-      .catch((err) => {
-        console.error("Failed to load authorities", err);
-        setAuthorities([]);
-      });
+  const loadAuthorities = async () => {
+    try {
+      const res = await getAllAuthorities();
+      setAuthorities(Array.isArray(res) ? res : []);
+    } catch (err) {
+      console.error("Failed to load authorities", err);
+      setAuthorities([]);
+    }
   };
 
   useEffect(() => {
@@ -51,14 +51,14 @@ const ManageAuthority = () => {
           <div className="flex gap-3">
             <button
               onClick={() => setOpenAddDept(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               + Add Department
             </button>
 
             <button
               onClick={() => setOpenModal(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               + Add Authority
             </button>
@@ -78,12 +78,16 @@ const ManageAuthority = () => {
             </thead>
 
             <tbody>
-              {authorities.map((auth) => (
-                <tr key={auth.id}>
-                  <td className="p-3 border">{auth.name}</td>
-                  <td className="p-3 border">{auth.department}</td>
-                  <td className="p-3 border">{auth.email}</td>
-                  <td className="p-3 border">{auth.status}</td>
+              {authorities.map((auth, index) => (
+                <tr key={auth.userId || auth.email || index}>
+                  <td className="p-3 border">{auth.name || "—"}</td>
+                  <td className="p-3 border">{auth.deptName || "—"}</td>
+                  <td className="p-3 border">{auth.email || "—"}</td>
+                  <td className="p-3 border">
+                    <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                      ACTIVE
+                    </span>
+                  </td>
                 </tr>
               ))}
 
@@ -100,19 +104,18 @@ const ManageAuthority = () => {
 
         {/* Add Authority Modal */}
         {openModal && (
-          <AddAuthorityModel
+          <AddAuthorityModal
             isOpen={openModal}
             categories={categories}
-            onClose={() => {
-              setOpenModal(false);
-              loadAuthorities(); // refresh list after creation
-            }}
+            onClose={() => setOpenModal(false)}
+            onSuccess={loadAuthorities} // ✅ refresh after success
           />
         )}
 
         {/* Add Department Modal */}
         {openAddDept && (
           <AddDepartmentModal
+            categories={categories}
             onClose={() => setOpenAddDept(false)}
             onSuccess={() => {
               setOpenAddDept(false);

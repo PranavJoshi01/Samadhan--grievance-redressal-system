@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { submitFeedback } from "../../services/feedbackService"; // ✅ use service
 
 const GrievanceDetails = () => {
   const [grievances, setGrievances] = useState([]);
@@ -20,7 +21,7 @@ const GrievanceDetails = () => {
     if (!token) return null;
     try {
       const decoded = jwtDecode(token);
-      return decoded.userId; // your backend stores userId in token
+      return decoded.userId;
     } catch {
       return null;
     }
@@ -38,8 +39,6 @@ const GrievanceDetails = () => {
         );
 
         const all = res.data.content || res.data;
-
-        // Show only grievances created by logged-in user
         const mine = all.filter((g) => g.createdByUserId === userId);
 
         setGrievances(mine);
@@ -116,7 +115,6 @@ const GrievanceDetails = () => {
                 Submitted on: {new Date(grievance.createdAt).toLocaleDateString()}
               </div>
 
-              {/* Feedback Button */}
               {grievance.status === "RESOLVED" &&
                 !submittedFeedbackIds.includes(grievance.grievanceId) && (
                   <button
@@ -169,19 +167,20 @@ const GrievanceDetails = () => {
               <button
                 onClick={async () => {
                   try {
-                    await axios.post(
-                      "http://localhost:8080/feedback",
-                      { grievanceId: selectedGrievanceId, rating, message },
-                      { headers: { Authorization: `Bearer ${token}` } }
-                    );
+                    await submitFeedback({
+                      grievanceId: selectedGrievanceId,
+                      rating,
+                      message,
+                    });
 
                     alert("✅ Feedback submitted successfully!");
                     setSubmittedFeedbackIds(prev => [...prev, selectedGrievanceId]);
                     setShowFeedbackModal(false);
                     setMessage("");
                     setRating(5);
-                  } catch {
-                    alert("❌ Error submitting feedback");
+
+                  } catch (err) {
+                    alert("⚠ " + err.message); // Shows real backend reason
                   }
                 }}
                 className="px-3 py-1 bg-purple-600 text-white rounded"
